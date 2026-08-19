@@ -6,7 +6,7 @@
 
 **India's First AI-Driven Unified Platform for Oceanographic, Fisheries & Molecular Biodiversity Intelligence**
 
-*Built by **Team Orbit** for Smart India Hackathon 2026*
+*Built by **Team Orbit** for SIH2026 Internal Hackthon*
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
