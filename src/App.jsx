@@ -4,14 +4,14 @@ import {
   ResponsiveContainer, Legend, LineChart, Line, BarChart, Bar, Cell
 } from 'recharts';
 import {
-  MapContainer, TileLayer, CircleMarker, Popup, Polyline, Circle, LayerGroup
+  MapContainer, TileLayer, CircleMarker, Popup, Polyline, Circle, LayerGroup, Polygon, useMap
 } from 'react-leaflet';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import {
   Waves, Activity, Fish, Dna, MessageCircle, Radio, FlaskConical, Zap,
   Upload, Send, Shield, X, Globe, Bot, Microscope, ScanLine,
   Wind, ArrowUpRight, CheckCircle2, Clock, Eye, Radar, RefreshCw, Sliders, Cpu, Layers,
-  Copy, Check, RotateCcw, Sparkles
+  Copy, Check, RotateCcw, Sparkles, Search, Compass, SlidersHorizontal, Anchor, Thermometer
 } from 'lucide-react';
 import './App.css';
 
@@ -764,10 +764,33 @@ function OverviewDashboard({ logEntries }) {
 
 
 // ══════════════════════════════════════════════════════════════════════════════
-// 2. GIS MAP (React-Leaflet)
+// 2. GIS MAP (React-Leaflet + Station Telemetry Inspector)
 // ══════════════════════════════════════════════════════════════════════════════
 
+const eezPolygon = [
+  [23.5, 68.0], [22.2, 67.5], [20.0, 67.5], [17.5, 68.0], [15.0, 69.0],
+  [12.0, 70.0], [9.5, 71.5], [7.5, 74.0], [5.8, 77.0], [6.2, 80.0],
+  [8.5, 82.5], [11.5, 84.5], [14.5, 86.5], [17.8, 88.5], [20.5, 89.2],
+  [21.5, 89.0], [21.5, 87.2], [20.0, 86.5], [17.8, 83.5], [15.5, 81.0],
+  [12.5, 80.0], [9.8, 79.5], [8.1, 77.5], [9.5, 75.5], [12.8, 74.0],
+  [15.2, 73.5], [18.9, 71.5], [22.5, 69.5], [23.5, 68.0]
+];
+
+function MapFlyTo({ center }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, 7, { duration: 1.2 });
+    }
+  }, [center, map]);
+  return null;
+}
+
 function GISMap({ layers, toggleLayer }) {
+  const [selectedStation, setSelectedStation] = useState(mapMarkers[0]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all');
+
   const markerColor = (type) => {
     if (type === 'energy') return '#f59e0b';
     if (type === 'biodiversity') return '#2dd4bf';
@@ -775,6 +798,7 @@ function GISMap({ layers, toggleLayer }) {
   };
 
   const layerConfig = [
+    { key: 'eez', label: 'EEZ Boundary (200 NM)', icon: Compass },
     { key: 'currents', label: 'Ocean Currents', icon: Wind },
     { key: 'migration', label: 'Fish Migration', icon: Fish },
     { key: 'biodiversity', label: 'Biodiversity Hotspots', icon: Eye },
@@ -782,13 +806,51 @@ function GISMap({ layers, toggleLayer }) {
     { key: 'digitalTwin', label: 'Digital Twin Zone', icon: ScanLine },
   ];
 
+  const filteredMarkers = mapMarkers.filter(m => {
+    const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase());
+    if (activeFilter === 'energy') return matchesSearch && m.type === 'energy';
+    if (activeFilter === 'bio') return matchesSearch && m.type === 'biodiversity';
+    if (activeFilter === 'sensor') return matchesSearch && m.type === 'sensor';
+    if (activeFilter === 'highScore') return matchesSearch && m.suitability >= 8;
+    return matchesSearch;
+  });
+
   return (
     <div className="tab-content" id="gis-map-section">
       <div className="section-header">
         <h2>Geospatial Intelligence</h2>
-        <p>Interactive visualization of the Indian Exclusive Economic Zone</p>
+        <p>Interactive 3D-depth visualization of the Indian Exclusive Economic Zone (EEZ)</p>
       </div>
 
+      {/* Map Search & Filter Toolbar */}
+      <div className="map-toolbar">
+        <div className="map-search-wrapper">
+          <Search size={15} />
+          <input
+            type="text"
+            className="map-search-input"
+            placeholder="Search stations (e.g. Kerala, Kutch, Lakshadweep, Visakhapatnam)..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="map-filter-pills">
+          <button className={`map-filter-pill ${activeFilter === 'all' ? 'active' : ''}`} onClick={() => setActiveFilter('all')}>
+            All ({mapMarkers.length})
+          </button>
+          <button className={`map-filter-pill ${activeFilter === 'highScore' ? 'active' : ''}`} onClick={() => setActiveFilter('highScore')}>
+            ⚡ Prime Energy (&gt;8.0 Score)
+          </button>
+          <button className={`map-filter-pill ${activeFilter === 'bio' ? 'active' : ''}`} onClick={() => setActiveFilter('bio')}>
+            🪸 Coral Hotspots
+          </button>
+          <button className={`map-filter-pill ${activeFilter === 'sensor' ? 'active' : ''}`} onClick={() => setActiveFilter('sensor')}>
+            🛰️ Sensor Array
+          </button>
+        </div>
+      </div>
+
+      {/* Map View Wrapper */}
       <div className="map-wrapper">
         <MapContainer center={[13, 76]} zoom={5} style={{ height: '580px', width: '100%' }}
           zoomControl={true} attributionControl={true} id="leaflet-map">
@@ -797,6 +859,16 @@ function GISMap({ layers, toggleLayer }) {
             attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             subdomains="abcd" maxZoom={19}
           />
+
+          <MapFlyTo center={selectedStation ? [selectedStation.lat, selectedStation.lng] : null} />
+
+          {/* EEZ Maritime Boundary 200 NM Polygon */}
+          {layers.eez && (
+            <Polygon
+              positions={eezPolygon}
+              pathOptions={{ color: '#22d3ee', weight: 1.5, opacity: 0.7, dashArray: '6 6', fillColor: '#22d3ee', fillOpacity: 0.03 }}
+            />
+          )}
 
           {/* Ocean Currents */}
           {layers.currents && (
@@ -841,10 +913,22 @@ function GISMap({ layers, toggleLayer }) {
               pathOptions={{ color: '#a78bfa', fillColor: '#a78bfa', fillOpacity: 0.06, weight: 1.5, opacity: 0.4, dashArray: '6 4' }} />
           )}
 
-          {/* All markers */}
-          {mapMarkers.map(marker => (
-            <CircleMarker key={marker.id} center={[marker.lat, marker.lng]}
-              radius={6} pathOptions={{ color: markerColor(marker.type), fillColor: markerColor(marker.type), fillOpacity: 0.8, weight: 1.5 }}>
+          {/* All Markers */}
+          {filteredMarkers.map(marker => (
+            <CircleMarker
+              key={marker.id}
+              center={[marker.lat, marker.lng]}
+              radius={selectedStation?.id === marker.id ? 9 : 6}
+              pathOptions={{
+                color: markerColor(marker.type),
+                fillColor: markerColor(marker.type),
+                fillOpacity: selectedStation?.id === marker.id ? 1 : 0.8,
+                weight: selectedStation?.id === marker.id ? 3 : 1.5
+              }}
+              eventHandlers={{
+                click: () => setSelectedStation(marker)
+              }}
+            >
               <Popup>
                 <div className="map-popup-content">
                   <h3>{marker.name}</h3>
@@ -863,26 +947,70 @@ function GISMap({ layers, toggleLayer }) {
           ))}
         </MapContainer>
 
-        {/* Custom layer controls */}
+        {/* Custom Layer Controls */}
         <div className="map-controls" id="map-controls">
           {layerConfig.map(l => (
             <label key={l.key} className={`map-layer-toggle ${layers[l.key] ? 'active' : ''}`} id={`layer-${l.key}`}>
-              <input type="checkbox" checked={layers[l.key]} onChange={() => toggleLayer(l.key)} />
+              <input type="checkbox" checked={!!layers[l.key]} onChange={() => toggleLayer(l.key)} />
               <l.icon size={13} />{l.label}
             </label>
           ))}
         </div>
 
-        {/* Legend */}
+        {/* Map Legend */}
         <div className="map-legend" id="map-legend">
           <h4>Legend</h4>
           <div className="legend-item"><div className="legend-dot" style={{ background: '#f59e0b' }} /> Energy Site</div>
           <div className="legend-item"><div className="legend-dot" style={{ background: '#2dd4bf' }} /> Biodiversity Hotspot</div>
           <div className="legend-item"><div className="legend-dot" style={{ background: '#22d3ee' }} /> Sensor / Buoy</div>
-          <div className="legend-item"><div className="legend-line" style={{ background: '#22d3ee' }} /> Ocean Current</div>
+          <div className="legend-item"><div className="legend-line" style={{ background: '#22d3ee' }} /> Ocean Current (WICC)</div>
           <div className="legend-item"><div className="legend-line" style={{ background: '#2dd4bf' }} /> Migration Path</div>
         </div>
       </div>
+
+      {/* Selected Station Telemetry Inspector */}
+      {selectedStation && (
+        <div className="station-inspector">
+          <div className="station-inspector-header">
+            <div className="station-inspector-title">
+              <h3>{selectedStation.name}</h3>
+              <p>Lat: {selectedStation.lat.toFixed(2)}°N, Long: {selectedStation.lng.toFixed(2)}°E • Station ID: {selectedStation.id.toUpperCase()}</p>
+            </div>
+            <div className="status-badge green">
+              <Activity size={12} /> Live In-Situ Telemetry Feed
+            </div>
+          </div>
+
+          <div className="telemetry-grid">
+            <div className="telemetry-card">
+              <div className="telemetry-label">Energy Suitability</div>
+              <div className="telemetry-val" style={{ color: selectedStation.suitability > 7 ? '#4ade80' : '#f59e0b' }}>
+                {selectedStation.suitability}/10
+              </div>
+            </div>
+            <div className="telemetry-card">
+              <div className="telemetry-label">Depth Range</div>
+              <div className="telemetry-val" style={{ color: '#22d3ee' }}>{selectedStation.depth}</div>
+            </div>
+            <div className="telemetry-card">
+              <div className="telemetry-label">Tidal Amplitude</div>
+              <div className="telemetry-val" style={{ color: '#2dd4bf' }}>{selectedStation.tidal}</div>
+            </div>
+            <div className="telemetry-card">
+              <div className="telemetry-label">Catalogued Species</div>
+              <div className="telemetry-val" style={{ color: '#a78bfa' }}>{selectedStation.species} spp</div>
+            </div>
+            <div className="telemetry-card">
+              <div className="telemetry-label">Sea Surface Temp</div>
+              <div className="telemetry-val" style={{ color: '#f59e0b' }}>27.4 °C</div>
+            </div>
+            <div className="telemetry-card">
+              <div className="telemetry-label">Current Velocity</div>
+              <div className="telemetry-val" style={{ color: '#22d3ee' }}>1.85 knots</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
