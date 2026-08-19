@@ -493,6 +493,7 @@ export default function App() {
     energy: true,
     digitalTwin: false,
   });
+  const [turbineCapacity, setTurbineCapacity] = useState(50);
   const [activeBot, setActiveBot] = useState('energy'); // 'energy' or 'bio'
   const [energyMessages, setEnergyMessages] = useState(BOT_CONFIG.energy.initialMessages);
   const [bioMessages, setBioMessages] = useState(BOT_CONFIG.bio.initialMessages);
