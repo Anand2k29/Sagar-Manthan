@@ -26,6 +26,7 @@
 - [The Problem](#-the-problem)
 - [Our Solution](#-our-solution--sagar-manthan)
 - [What Makes Us Unique (USPs)](#-what-makes-us-unique-usps)
+- [Machine Learning & AI Implementation](#-machine-learning--ai-implementation-prototype-vs-full-production-roadmap)
 - [What No One Has Built Before](#-what-no-one-has-built-before)
 - [How It Helps the Government](#-how-it-helps-the-government)
 - [Platform Features](#-platform-features)
@@ -125,6 +126,56 @@ Policy makers and researchers can query complex ocean data in **plain English/Hi
 One map to rule them all — **5 toggleable data layers** on a single interactive map:
 - Ocean currents, fish migration paths, biodiversity hotspots, energy sites, digital twin zones
 - Every marker shows cross-domain data (species density + tidal range + energy suitability in one popup)
+
+---
+
+## 🧠 Machine Learning & AI Implementation (Prototype vs. Full Production Roadmap)
+
+> **Note on Prototype Implementation:** 
+> In this SIH hackathon prototype, machine learning inferences (otolith morphometric matching, eDNA sequence alignment, digital twin hydrodynamic impact scoring, and federated learning gradient synchronization) are simulated using pre-computed feature representations, mathematical surrogate models, and Google Gemini API domain intelligence. Below is the technical architecture for full production deployment.
+
+### 🔬 1. Otolith Morphometry Species Classifier (Computer Vision)
+- **Prototype Status:** Simulated morphometric feature extraction (Major/Minor axis, Aspect Ratio, Perimeter) with rule-based species matching.
+- **Production Architecture:** 
+  - **Model:** **EfficientNet-B4 / Vision Transformer (ViT)** fine-tuned on CMLRE's 50,000+ ear-stone image dataset.
+  - **Feature Extraction:** Fourier Descriptors & Elliptic Fourier Analysis (EFA) for *sulcus acusticus* contour analysis.
+  - **Target Outputs:** Species identification (94.3% target accuracy), age cohort estimation (0–5 years), and fish stock origin classification.
+  - **Edge Deployment:** ONNX Runtime / TensorRT for offline deployment on field research vessels.
+
+```
+[ Otolith Image ] ──► [ OpenCV Segmentation ] ──► [ Fourier Contours ] ──► [ EfficientNet-B4 ] ──► [ Species & Age ]
+```
+
+---
+
+### 🧬 2. eDNA Sequence Barcoding Transformer (Genomics AI)
+- **Prototype Status:** Interactive sequence string alignment visualizer comparing sample target base pairs against reference taxonomical barcodes.
+- **Production Architecture:**
+  - **Model:** **DNABERT-2 / Nucleotide Transformer** pretrained on 2.5 million marine genomic sequences (16S rRNA, 18S rRNA, COI markers).
+  - **Pipeline:** FastQ quality filtering ──► K-mer tokenization ──► Multi-head self-attention sequence matching ──► Taxonomic lineage probability assignment.
+  - **Capabilities:** Detection of rare/cryptic species, Schedule I protected wildlife alerts (e.g., *Rhincodon typus*), and invasive species monitoring.
+
+---
+
+### 🌊 3. Digital Twin Hydrodynamic Forecasting (Physics-Informed AI)
+- **Prototype Status:** Parametric mathematical simulator calculating energy yield, traffic disruption, and noise propagation scaled by MW capacity.
+- **Production Architecture:**
+  - **Model:** **Physics-Informed Neural Networks (PINNs)** combined with **Temporal Fusion Transformers (TFT)**.
+  - **Physics Constraints:** Navier-Stokes hydrodynamic flow equations, bathymetry elevation grids, and tidal current vector fields.
+  - **Inputs:** Real-time ARGO buoy feeds, INCOIS coastal radar, satellite altimetry.
+  - **Outputs:** 72-hour tidal current velocity prediction, turbine wake turbulence modeling, and dynamic marine mammal detour routing.
+
+---
+
+### 🔒 4. Privacy-Preserving Federated Learning Hub
+- **Prototype Status:** Interactive Federated Sync pulse simulator demonstrating differential privacy parameter ($\epsilon$) and gradient aggregation.
+- **Production Architecture:**
+  - **Framework:** **Flower / PySyft** with Differential Privacy (DP-SGD, $\epsilon=0.5$).
+  - **Node Consortium:** CMLRE (Kochi), Fishery Survey of India (Mumbai), Agharkar Research Institute (Pune).
+  - **Workflow:** 
+    1. Local institutes train deep learning models on private local datasets.
+    2. Model weights/gradients are encrypted using Secure Aggregation Protocol (SecAgg).
+    3. Central Sagar-Manthan hub aggregates updates without ever viewing raw research data.
 
 ---
 

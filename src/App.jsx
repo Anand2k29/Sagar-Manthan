@@ -777,6 +777,16 @@ const eezPolygon = [
   [15.2, 73.5], [18.9, 71.5], [22.5, 69.5], [23.5, 68.0]
 ];
 
+function MapInit() {
+  const map = useMap();
+  useEffect(() => {
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 250);
+  }, [map]);
+  return null;
+}
+
 function MapFlyTo({ center, flyCount }) {
   const map = useMap();
   useEffect(() => {
@@ -854,8 +864,19 @@ function GISMap({ layers, toggleLayer }) {
 
       {/* Map View Wrapper */}
       <div className="map-wrapper">
-        <MapContainer center={[13, 76]} zoom={5} style={{ height: '580px', width: '100%' }}
-          zoomControl={true} attributionControl={true} id="leaflet-map">
+        <MapContainer
+          center={[14.5, 76.5]}
+          zoom={5.2}
+          minZoom={4.5}
+          maxZoom={12}
+          maxBounds={[[0, 45], [32, 105]]}
+          maxBoundsViscosity={0.8}
+          style={{ height: '580px', width: '100%' }}
+          zoomControl={true}
+          attributionControl={true}
+          id="leaflet-map"
+        >
+          <MapInit />
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://carto.com/">CARTO</a>'
