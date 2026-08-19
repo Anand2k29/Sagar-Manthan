@@ -1025,116 +1025,60 @@ input[type="range"]::-moz-range-thumb {
 
 .partner-badge svg { width: 11px; height: 11px; }
 
-/* ── Chat ── */
+/* ── Chat Container ── */
 .chat-container {
-  max-width: 860px;
+  max-width: 880px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 200px);
-  min-height: 480px;
+  height: calc(100vh - 190px);
+  min-height: 500px;
 }
 
-.chat-header { text-align: center; padding: 1rem 0 0.75rem; }
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.75rem;
+}
 
-.chat-header h2 {
+.chat-header-title h2 {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-bright);
-  margin-bottom: 2px;
 }
 
-.chat-header p { font-size: 0.78rem; color: var(--text-muted); }
+.chat-header-title p { font-size: 0.75rem; color: var(--text-muted); }
 
-/* Prompt chips */
-.prompt-chips {
+.chat-header-actions { display: flex; align-items: center; gap: 8px; }
+
+.chat-action-btn {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: center;
-  padding: 0.5rem 0 1rem;
-}
-
-.prompt-chip {
-  padding: 6px 14px;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  color: var(--text-secondary);
-  font-size: 0.74rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.72rem;
   font-family: var(--font-sans);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
-.prompt-chip:hover {
-  border-color: var(--border-hover);
-  color: var(--cyan);
-  background: var(--cyan-dim);
-}
+.chat-action-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
 
-/* API key input */
-.api-key-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: var(--amber-dim);
-  border: 1px solid rgba(245, 158, 11, 0.15);
-  border-radius: var(--radius-md);
-  margin-bottom: 10px;
-  font-size: 0.78rem;
-  color: var(--amber);
-}
-
-.api-key-bar input {
-  flex: 1;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 5px 10px;
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  outline: none;
-}
-
-.api-key-bar input:focus { border-color: var(--border-active); }
-
-.api-key-bar button {
-  padding: 5px 12px;
-  background: var(--amber);
-  border: none;
-  border-radius: var(--radius-sm);
-  color: var(--bg-deep);
-  font-weight: 600;
-  font-size: 0.75rem;
-  cursor: pointer;
-  font-family: var(--font-sans);
-}
-
-.api-key-connected {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: var(--green-dim);
-  border-radius: var(--radius-sm);
-  font-size: 0.72rem;
-  color: var(--green);
-  font-weight: 600;
-  margin-bottom: 8px;
-  justify-content: center;
-}
-
-/* Chat messages */
+/* Messages */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   scrollbar-width: thin;
   scrollbar-color: var(--bg-secondary) transparent;
 }
@@ -1142,20 +1086,16 @@ input[type="range"]::-moz-range-thumb {
 .chat-msg {
   display: flex;
   gap: 10px;
-  max-width: 82%;
+  max-width: 85%;
   animation: msgFade 0.25s ease-out;
-}
-
-@keyframes msgFade {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  position: relative;
 }
 
 .chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }
 
 .chat-avatar {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1168,28 +1108,91 @@ input[type="range"]::-moz-range-thumb {
 .chat-msg.ai .chat-avatar {
   background: linear-gradient(135deg, var(--cyan), var(--seafoam));
   color: var(--bg-deep);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
 }
 
 .chat-msg.user .chat-avatar { background: var(--bg-secondary); color: var(--text-primary); }
 
+.chat-bubble-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
 .chat-bubble {
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: var(--radius-md);
   font-size: 0.85rem;
-  line-height: 1.6;
-  white-space: pre-wrap;
+  line-height: 1.65;
+  position: relative;
 }
 
 .chat-msg.ai .chat-bubble {
   background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--text-primary);
+  border-top-left-radius: 2px;
 }
 
 .chat-msg.user .chat-bubble {
   background: var(--cyan-dim);
-  border: 1px solid rgba(34, 211, 238, 0.15);
+  border: 1px solid rgba(34, 211, 238, 0.2);
   color: var(--text-primary);
+  border-top-right-radius: 2px;
+}
+
+/* Copy button */
+.copy-msg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.copy-msg-btn:hover { color: var(--cyan); background: rgba(34, 211, 238, 0.08); }
+
+/* Formatted chat text */
+.chat-formatted p { margin-bottom: 0.6em; }
+.chat-formatted p:last-child { margin-bottom: 0; }
+.chat-formatted strong { color: var(--cyan); font-weight: 600; }
+.chat-formatted em { color: var(--seafoam); font-style: italic; }
+.chat-formatted ul, .chat-formatted ol { margin: 6px 0 6px 18px; }
+.chat-formatted li { margin-bottom: 3px; }
+
+/* Prompt chips */
+.prompt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0.5rem 0;
+}
+
+.prompt-chip {
+  padding: 5px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--text-secondary);
+  font-size: 0.73rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.prompt-chip:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: var(--cyan-dim);
 }
 
 .chat-input-area {

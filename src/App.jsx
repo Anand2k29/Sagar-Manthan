@@ -10,7 +10,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import {
   Waves, Activity, Fish, Dna, MessageCircle, Radio, FlaskConical, Zap,
   Upload, Send, Shield, X, Globe, Bot, Microscope, ScanLine,
-  Wind, ArrowUpRight, CheckCircle2, Clock, Eye, Radar, RefreshCw, Sliders, Cpu, Layers
+  Wind, ArrowUpRight, CheckCircle2, Clock, Eye, Radar, RefreshCw, Sliders, Cpu, Layers,
+  Copy, Check, RotateCcw, Sparkles
 } from 'lucide-react';
 import './App.css';
 
@@ -292,19 +293,36 @@ const cannedResponses = [
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
-// GEMINI HELPER
+// GEMINI HELPER WITH MODEL FALLBACKS
 // ══════════════════════════════════════════════════════════════════════════════
 
 let geminiChat = null;
+let activeGeminiModel = null;
+
+const GEMINI_MODELS = [
+  'gemini-2.5-flash',
+  'gemini-1.5-flash',
+  'gemini-1.5-pro',
+  'gemini-1.5-flash-latest'
+];
 
 async function initGeminiChat(apiKey) {
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
-    systemInstruction: GEMINI_SYSTEM_PROMPT,
-  });
-  geminiChat = model.startChat({ history: [] });
-  return geminiChat;
+  for (const modelName of GEMINI_MODELS) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        systemInstruction: GEMINI_SYSTEM_PROMPT,
+      });
+      geminiChat = model.startChat({ history: [] });
+      activeGeminiModel = modelName;
+      console.log(`Successfully initialized Gemini chat with model: ${modelName}`);
+      return geminiChat;
+    } catch (err) {
+      console.warn(`Model init failed for ${modelName}:`, err);
+    }
+  }
+  throw new Error('Could not initialize Gemini model.');
 }
 
 async function sendGeminiMessage(message) {
@@ -313,9 +331,44 @@ async function sendGeminiMessage(message) {
     const result = await geminiChat.sendMessage(message);
     return result.response.text();
   } catch (err) {
-    console.error('Gemini error:', err);
-    return `I encountered an issue processing your request. Error: ${err.message}`;
+    console.error('Gemini sendMessage error:', err);
+    return `*Note: Live API returned an error (${err.message}). Defaulting to Sagar-Manthan system knowledge response:*\n\n` +
+           cannedResponses[Math.floor(Math.random() * cannedResponses.length)];
   }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CHAT MARKDOWN RENDERER
+// ══════════════════════════════════════════════════════════════════════════════
+
+function formatInlineMarkdown(str) {
+  return str
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code style="background:rgba(0,0,0,0.3);padding:2px 5px;border-radius:4px;font-family:var(--font-mono);font-size:0.75rem">$1</code>');
+}
+
+function FormattedChatText({ text }) {
+  if (!text) return null;
+  const paragraphs = text.split('\n\n');
+  return (
+    <div className="chat-formatted">
+      {paragraphs.map((p, i) => {
+        if (p.includes('\n1. ') || p.includes('\n- ') || p.startsWith('1. ') || p.startsWith('- ')) {
+          const lines = p.split('\n');
+          return (
+            <ul key={i}>
+              {lines.map((line, j) => {
+                const cleanLine = line.replace(/^(\d+\.|\-)\s*/, '');
+                return <li key={j} dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(cleanLine) }} />;
+              })}
+            </ul>
+          );
+        }
+        return <p key={i} dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(p) }} />;
+      })}
+    </div>
+  );
 }
 
 
@@ -492,6 +545,7 @@ export default function App() {
             messages={chatMessages} input={chatInput} setInput={setChatInput}
             onSend={handleSendChat} onKeyDown={handleKeyDown} isTyping={isTyping}
             chatEndRef={chatEndRef} geminiConnected={geminiConnected}
+            setChatMessages={setChatMessages}
           />
         )}
       </main>
@@ -1086,20 +1140,37 @@ function EDNAModule({ tc, setTc, td, bi, ae }) {
 // 5. CHAT MODULE (Gemini-powered)
 // ══════════════════════════════════════════════════════════════════════════════
 
-function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, chatEndRef, geminiConnected }) {
+function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, chatEndRef, geminiConnected, setChatMessages }) {
+  const [copiedIdx, setCopiedIdx] = useState(null);
+
+  const handleCopy = (text, idx) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
+
+  const handleClear = () => {
+    setChatMessages(initialChat);
+  };
+
   return (
     <div className="tab-content chat-container" id="chat-module">
       <div className="chat-header">
-        <h2>Ask Sagar-Manthan</h2>
-        <p>Natural language interface to India's ocean intelligence platform</p>
+        <div className="chat-header-title">
+          <h2>Ask Sagar-Manthan</h2>
+          <p>Conversational ocean intelligence powered by Google Gemini AI</p>
+        </div>
+        <div className="chat-header-actions">
+          {geminiConnected && (
+            <div className="status-badge green"><Sparkles size={11} /> Gemini Live</div>
+          )}
+          <button className="chat-action-btn" onClick={handleClear} title="Clear conversation history">
+            <RotateCcw size={13} /> Clear Chat
+          </button>
+        </div>
       </div>
 
-      {/* Gemini connection status */}
-      {geminiConnected && (
-        <div className="api-key-connected"><CheckCircle2 size={13} /> Gemini AI Connected — Live responses enabled</div>
-      )}
-
-      {/* Suggested prompts */}
+      {/* Suggested prompt chips */}
       <div className="prompt-chips">
         {promptSuggestions.map((s, i) => (
           <button key={i} className="prompt-chip" onClick={() => setInput(s)}>{s}</button>
@@ -1110,13 +1181,23 @@ function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, ch
       <div className="chat-messages" id="chat-messages">
         {messages.map((msg, i) => (
           <div key={i} className={`chat-msg ${msg.role === 'user' ? 'user' : 'ai'}`}>
-            <div className="chat-avatar">{msg.role === 'ai' ? <Waves size={14} /> : 'You'}</div>
-            <div className="chat-bubble">{msg.text}</div>
+            <div className="chat-avatar">{msg.role === 'ai' ? <Waves size={15} /> : 'You'}</div>
+            <div className="chat-bubble-wrapper">
+              <div className="chat-bubble">
+                <FormattedChatText text={msg.text} />
+              </div>
+              {msg.role === 'ai' && (
+                <button className="copy-msg-btn" onClick={() => handleCopy(msg.text, i)}>
+                  {copiedIdx === i ? <Check size={12} style={{ color: '#4ade80' }} /> : <Copy size={12} />}
+                  <span>{copiedIdx === i ? 'Copied' : 'Copy'}</span>
+                </button>
+              )}
+            </div>
           </div>
         ))}
         {isTyping && (
           <div className="chat-msg ai">
-            <div className="chat-avatar"><Waves size={14} /></div>
+            <div className="chat-avatar"><Waves size={15} /></div>
             <div className="chat-bubble">
               <div className="typing-indicator"><div className="typing-dot" /><div className="typing-dot" /><div className="typing-dot" /></div>
             </div>
@@ -1128,7 +1209,7 @@ function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, ch
       {/* Input */}
       <div className="chat-input-area">
         <div className="chat-input-wrapper">
-          <input type="text" className="chat-input" placeholder="Ask about ocean data, energy sites, biodiversity..." value={input} onChange={e => setInput(e.target.value)} onKeyDown={onKeyDown} id="chat-input" />
+          <input type="text" className="chat-input" placeholder="Ask about ocean data, energy sites, sardine migration, eDNA..." value={input} onChange={e => setInput(e.target.value)} onKeyDown={onKeyDown} id="chat-input" />
           <button className="chat-send-btn" onClick={onSend} disabled={isTyping} id="chat-send-btn"><Send size={15} /> Send</button>
         </div>
       </div>
