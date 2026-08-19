@@ -777,18 +777,19 @@ const eezPolygon = [
   [15.2, 73.5], [18.9, 71.5], [22.5, 69.5], [23.5, 68.0]
 ];
 
-function MapFlyTo({ center }) {
+function MapFlyTo({ center, flyCount }) {
   const map = useMap();
   useEffect(() => {
-    if (center) {
+    if (center && flyCount > 0) {
       map.flyTo(center, 7, { duration: 1.2 });
     }
-  }, [center, map]);
+  }, [flyCount]);
   return null;
 }
 
 function GISMap({ layers, toggleLayer }) {
   const [selectedStation, setSelectedStation] = useState(mapMarkers[0]);
+  const [flyCount, setFlyCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
 
@@ -861,7 +862,7 @@ function GISMap({ layers, toggleLayer }) {
             subdomains="abcd" maxZoom={19}
           />
 
-          <MapFlyTo center={selectedStation ? [selectedStation.lat, selectedStation.lng] : null} />
+          <MapFlyTo center={selectedStation ? [selectedStation.lat, selectedStation.lng] : null} flyCount={flyCount} />
 
           {/* EEZ Maritime Boundary 200 NM Polygon */}
           {layers.eez && (
@@ -927,7 +928,10 @@ function GISMap({ layers, toggleLayer }) {
                 weight: selectedStation?.id === marker.id ? 3 : 1.5
               }}
               eventHandlers={{
-                click: () => setSelectedStation(marker)
+                click: () => {
+                  setSelectedStation(marker);
+                  setFlyCount(c => c + 1);
+                }
               }}
             >
               <Popup>
