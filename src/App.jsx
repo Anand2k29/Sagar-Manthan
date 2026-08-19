@@ -103,11 +103,108 @@ const biodiversityZones = [
 ];
 
 const specimenData = [
-  { name: 'Rastrelliger kanagurta', match: '91.7%', location: 'Mangalore' },
-  { name: 'Stolephorus indicus', match: '88.2%', location: 'Kochi' },
-  { name: 'Nemipterus japonicus', match: '85.6%', location: 'Visakhapatnam' },
-  { name: 'Decapterus russelli', match: '82.1%', location: 'Goa' },
-  { name: 'Scomberomorus guttatus', match: '79.4%', location: 'Mumbai' },
+  {
+    id: 0,
+    name: 'Sardinella longiceps',
+    commonName: 'Indian Oil Sardine',
+    match: '94.3%',
+    sampleId: 'SM-OTO-2024-0847',
+    location: 'Kochi, Kerala',
+    length: '4.82 mm',
+    width: '2.37 mm',
+    area: '8.94 mm²',
+    perimeter: '13.21 mm',
+    aspectRatio: '2.03',
+    circularity: '0.644',
+    age: '2–3 years',
+    rx: 110,
+    ry: 65,
+  },
+  {
+    id: 1,
+    name: 'Rastrelliger kanagurta',
+    commonName: 'Indian Mackerel',
+    match: '91.7%',
+    sampleId: 'SM-OTO-2024-0912',
+    location: 'Mangalore, Karnataka',
+    length: '5.14 mm',
+    width: '2.68 mm',
+    area: '10.82 mm²',
+    perimeter: '14.65 mm',
+    aspectRatio: '1.92',
+    circularity: '0.631',
+    age: '3–4 years',
+    rx: 118,
+    ry: 72,
+  },
+  {
+    id: 2,
+    name: 'Stolephorus indicus',
+    commonName: 'Indian Anchovy',
+    match: '88.2%',
+    sampleId: 'SM-OTO-2024-0734',
+    location: 'Kochi, Kerala',
+    length: '3.21 mm',
+    width: '1.45 mm',
+    area: '3.66 mm²',
+    perimeter: '8.92 mm',
+    aspectRatio: '2.21',
+    circularity: '0.582',
+    age: '1–2 years',
+    rx: 85,
+    ry: 48,
+  },
+  {
+    id: 3,
+    name: 'Nemipterus japonicus',
+    commonName: 'Japanese Threadfin Bream',
+    match: '85.6%',
+    sampleId: 'SM-OTO-2024-1045',
+    location: 'Visakhapatnam, AP',
+    length: '6.42 mm',
+    width: '3.88 mm',
+    area: '19.56 mm²',
+    perimeter: '18.41 mm',
+    aspectRatio: '1.65',
+    circularity: '0.724',
+    age: '4–5 years',
+    rx: 130,
+    ry: 82,
+  },
+  {
+    id: 4,
+    name: 'Decapterus russelli',
+    commonName: 'Indian Scad',
+    match: '82.1%',
+    sampleId: 'SM-OTO-2024-0621',
+    location: 'Goa Coast',
+    length: '4.15 mm',
+    width: '2.10 mm',
+    area: '6.84 mm²',
+    perimeter: '11.45 mm',
+    aspectRatio: '1.98',
+    circularity: '0.650',
+    age: '2 years',
+    rx: 98,
+    ry: 58,
+  },
+  {
+    id: 5,
+    name: 'Scomberomorus guttatus',
+    commonName: 'Indo-Pacific King Mackerel',
+    match: '79.4%',
+    sampleId: 'SM-OTO-2024-1102',
+    location: 'Mumbai, Maharashtra',
+    length: '7.85 mm',
+    width: '4.12 mm',
+    area: '25.40 mm²',
+    perimeter: '22.30 mm',
+    aspectRatio: '1.90',
+    circularity: '0.640',
+    age: '5+ years',
+    rx: 142,
+    ry: 88,
+  }
 ];
 
 const dnaMatchResults = [
@@ -315,7 +412,7 @@ export default function App() {
         <div className="navbar-right">
           <div className="navbar-clock">{timeStr} IST</div>
           <div className="status-badge green"><div className="status-pulse" /> Online</div>
-          <div className="navbar-team"><Radar size={13} /> <span>Team Orbit</span>&nbsp;• SIH 2026</div>
+          <div className="navbar-team"><Radar size={13} /> <span>Team Orbit</span>&nbsp;• SIH2026 Internal Hackathon</div>
         </div>
       </nav>
 
@@ -347,7 +444,7 @@ export default function App() {
 
       {/* ── Footer ── */}
       <footer className="app-footer">
-        <span>Sagar-Manthan</span> — Developed by Team Orbit for Smart India Hackathon 2026 &nbsp;•&nbsp;
+        <span>Sagar-Manthan</span> — Developed by Team Orbit for SIH2026 Internal Hackathon &nbsp;•&nbsp;
         Ministry of Earth Sciences &nbsp;•&nbsp; INCOIS &nbsp;•&nbsp; Government of India
       </footer>
     </>
@@ -588,6 +685,7 @@ function GISMap({ layers, toggleLayer }) {
 
 function OtolithModule() {
   const [showAnalysis, setShowAnalysis] = useState(true);
+  const [selectedSpecimen, setSelectedSpecimen] = useState(specimenData[0]);
 
   return (
     <div className="tab-content" id="otolith-module">
@@ -600,7 +698,7 @@ function OtolithModule() {
         <div>
           <div className="section-title">Otolith Image Analysis</div>
           <div className={`upload-zone ${showAnalysis ? 'has-image' : ''}`} onClick={() => setShowAnalysis(true)} id="otolith-upload">
-            {showAnalysis ? <OtolithSVG /> : (
+            {showAnalysis ? <OtolithSVG specimen={selectedSpecimen} /> : (
               <>
                 <div className="upload-icon"><Upload /></div>
                 <div className="upload-text"><strong>Drag & drop</strong> an otolith image or click to upload</div>
@@ -615,21 +713,21 @@ function OtolithModule() {
           <div className="card">
             <div className="prediction-card" style={{ marginBottom: '14px' }}>
               <div className="prediction-label">Predicted Species</div>
-              <div className="prediction-species"><em>Sardinella longiceps</em></div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '4px 0 8px' }}>Indian Oil Sardine</div>
-              <div className="prediction-confidence">94.3%</div>
+              <div className="prediction-species"><em>{selectedSpecimen.name}</em></div>
+              <div style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '4px 0 8px' }}>{selectedSpecimen.commonName}</div>
+              <div className="prediction-confidence">{selectedSpecimen.match}</div>
               <div className="prediction-label">Confidence Score</div>
             </div>
             <div className="morph-results">
               {[
-                ['Length (Major Axis)', '4.82 mm'],
-                ['Width (Minor Axis)', '2.37 mm'],
-                ['Area', '8.94 mm²'],
-                ['Perimeter', '13.21 mm'],
-                ['Aspect Ratio', '2.03'],
-                ['Circularity Index', '0.644'],
-                ['Estimated Age', '2–3 years'],
-                ['Collection Site', 'Kochi, Kerala'],
+                ['Length (Major Axis)', selectedSpecimen.length],
+                ['Width (Minor Axis)', selectedSpecimen.width],
+                ['Area', selectedSpecimen.area],
+                ['Perimeter', selectedSpecimen.perimeter],
+                ['Aspect Ratio', selectedSpecimen.aspectRatio],
+                ['Circularity Index', selectedSpecimen.circularity],
+                ['Estimated Age', selectedSpecimen.age],
+                ['Collection Site', selectedSpecimen.location],
               ].map(([label, value], i) => (
                 <div key={i} className="morph-row">
                   <span className="morph-label">{label}</span>
@@ -642,10 +740,14 @@ function OtolithModule() {
       </div>
 
       <div style={{ marginTop: '1.5rem' }}>
-        <div className="section-title">Similar Specimens in Database</div>
+        <div className="section-title">Similar Specimens in Database (Click to view analysis)</div>
         <div className="specimens-scroll" id="specimens-scroll">
           {specimenData.map((sp, i) => (
-            <div key={i} className="specimen-card">
+            <div
+              key={sp.id}
+              className={`specimen-card ${selectedSpecimen.id === sp.id ? 'active' : ''}`}
+              onClick={() => setSelectedSpecimen(sp)}
+            >
               <div className="specimen-img"><SpecimenSVG index={i} /></div>
               <div className="specimen-name">{sp.name}</div>
               <div className="specimen-match">Match: {sp.match}</div>
@@ -814,7 +916,10 @@ function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, ch
 // SVG COMPONENTS
 // ══════════════════════════════════════════════════════════════════════════════
 
-function OtolithSVG() {
+function OtolithSVG({ specimen = specimenData[0] }) {
+  const rx = specimen.rx || 110;
+  const ry = specimen.ry || 65;
+
   return (
     <svg viewBox="0 0 400 300" style={{ width: '100%', height: '100%', background: '#040c14' }}>
       <defs>
@@ -826,16 +931,16 @@ function OtolithSVG() {
       </defs>
       <line x1="30" y1="270" x2="100" y2="270" stroke="#22d3ee" strokeWidth="1.5" />
       <text x="55" y="285" fill="#22d3ee" fontSize="9" textAnchor="middle" fontFamily="Inter">2 mm</text>
-      <ellipse cx="200" cy="140" rx="110" ry="65" fill="url(#oG)" filter="url(#oS)" transform="rotate(-8, 200, 140)" />
+      <ellipse cx="200" cy="140" rx={rx} ry={ry} fill="url(#oG)" filter="url(#oS)" transform="rotate(-8, 200, 140)" />
       {[0.85, 0.65, 0.45, 0.3].map((s, i) => (
-        <ellipse key={i} cx="200" cy="140" rx={110 * s} ry={65 * s} fill="none" stroke="rgba(90,78,56,0.5)" strokeWidth="0.8" transform="rotate(-8, 200, 140)" />
+        <ellipse key={i} cx="200" cy="140" rx={rx * s} ry={ry * s} fill="none" stroke="rgba(90,78,56,0.5)" strokeWidth="0.8" transform="rotate(-8, 200, 140)" />
       ))}
       <ellipse cx="195" cy="142" rx="12" ry="8" fill="#a39070" transform="rotate(-8, 195, 142)" />
-      <line x1="85" y1="140" x2="315" y2="140" stroke="#22d3ee" strokeWidth="0.6" strokeDasharray="4 2" opacity="0.6" />
-      <line x1="200" y1="70" x2="200" y2="210" stroke="#2dd4bf" strokeWidth="0.6" strokeDasharray="4 2" opacity="0.6" />
-      <text x="200" y="22" fill="#22d3ee" fontSize="10" textAnchor="middle" fontFamily="Inter" fontWeight="600">Sample SM-OTO-2024-0847</text>
-      <text x="322" y="138" fill="#22d3ee" fontSize="8" fontFamily="Inter">4.82 mm</text>
-      <text x="208" y="218" fill="#2dd4bf" fontSize="8" fontFamily="Inter">2.37 mm</text>
+      <line x1={200 - rx + 15} y1="140" x2={200 + rx + 15} y2="140" stroke="#22d3ee" strokeWidth="0.6" strokeDasharray="4 2" opacity="0.6" />
+      <line x1="200" y1={140 - ry - 10} x2="200" y2={140 + ry + 10} stroke="#2dd4bf" strokeWidth="0.6" strokeDasharray="4 2" opacity="0.6" />
+      <text x="200" y="22" fill="#22d3ee" fontSize="10" textAnchor="middle" fontFamily="Inter" fontWeight="600">Sample {specimen.sampleId}</text>
+      <text x={Math.min(375, 200 + rx + 15)} y="138" fill="#22d3ee" fontSize="8" fontFamily="Inter">{specimen.length}</text>
+      <text x="208" y={Math.min(270, 140 + ry + 18)} fill="#2dd4bf" fontSize="8" fontFamily="Inter">{specimen.width}</text>
     </svg>
   );
 }
