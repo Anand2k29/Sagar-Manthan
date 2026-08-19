@@ -916,9 +916,10 @@ function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, ch
 // SVG COMPONENTS
 // ══════════════════════════════════════════════════════════════════════════════
 
-function OtolithSVG({ specimen = specimenData[0] }) {
-  const rx = specimen.rx || 110;
-  const ry = specimen.ry || 65;
+function OtolithSVG({ specimen }) {
+  const currentSpecimen = specimen || specimenData[0];
+  const rx = Number(currentSpecimen?.rx) || 110;
+  const ry = Number(currentSpecimen?.ry) || 65;
 
   return (
     <svg viewBox="0 0 400 300" style={{ width: '100%', height: '100%', background: '#040c14' }}>
@@ -938,9 +939,9 @@ function OtolithSVG({ specimen = specimenData[0] }) {
       <ellipse cx="195" cy="142" rx="12" ry="8" fill="#a39070" transform="rotate(-8, 195, 142)" />
       <line x1={200 - rx + 15} y1="140" x2={200 + rx + 15} y2="140" stroke="#22d3ee" strokeWidth="0.6" strokeDasharray="4 2" opacity="0.6" />
       <line x1="200" y1={140 - ry - 10} x2="200" y2={140 + ry + 10} stroke="#2dd4bf" strokeWidth="0.6" strokeDasharray="4 2" opacity="0.6" />
-      <text x="200" y="22" fill="#22d3ee" fontSize="10" textAnchor="middle" fontFamily="Inter" fontWeight="600">Sample {specimen.sampleId}</text>
-      <text x={Math.min(375, 200 + rx + 15)} y="138" fill="#22d3ee" fontSize="8" fontFamily="Inter">{specimen.length}</text>
-      <text x="208" y={Math.min(270, 140 + ry + 18)} fill="#2dd4bf" fontSize="8" fontFamily="Inter">{specimen.width}</text>
+      <text x="200" y="22" fill="#22d3ee" fontSize="10" textAnchor="middle" fontFamily="Inter" fontWeight="600">Sample {currentSpecimen?.sampleId}</text>
+      <text x={Math.min(375, 200 + rx + 15)} y="138" fill="#22d3ee" fontSize="8" fontFamily="Inter">{currentSpecimen?.length}</text>
+      <text x="208" y={Math.min(270, 140 + ry + 18)} fill="#2dd4bf" fontSize="8" fontFamily="Inter">{currentSpecimen?.width}</text>
     </svg>
   );
 }
