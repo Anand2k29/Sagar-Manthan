@@ -293,6 +293,87 @@ const cannedResponses = [
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
+// DUAL BOT CONFIGURATIONS & SYSTEM PROMPTS
+// ══════════════════════════════════════════════════════════════════════════════
+
+const GEMINI_SYSTEM_PROMPTS = {
+  energy: `You are Sagar-Manthan Energy & Siting AI Advisor, built for India's Ministry of Earth Sciences (MoES) and MNRE. You specialize in marine renewable energy site optimization, bathymetry, tidal current velocity, wave energy potential, digital twin impact simulation, and turbine array capacity factors along India's coastline.
+
+Key Knowledge:
+- 14 identified marine energy sites in India's EEZ
+- Zone 7 (Kerala Coast): 42 GW theoretical wave energy potential, 2.1/10 biodiversity impact score
+- Zone 3 (Gulf of Kutch): 31 GW potential, 3.4/10 impact score, 2.8m tidal range
+- Digital Twin models: capacity factor (28-34%), marine traffic disruption %, noise level (dB), benthic footprint (ha)
+- West India Coastal Current (WICC) velocity data from INCOIS
+- India's 30 GW offshore renewable energy target by 2030
+
+Style: Quantitative, data-driven, authoritative government advisor. Use bold metrics, concise bullet lists, and precise technical terms. Do not include raw API error strings.`,
+
+  bio: `You are Sagar-Manthan Marine Biodiversity & eDNA Specialist AI, built for India's Centre for Marine Living Resources and Ecology (CMLRE) and National Biodiversity Authority. You specialize in molecular biodiversity (eDNA barcoding), fish migration corridors, otolith morphometry species taxonomy, and Schedule I wildlife protection.
+
+Key Knowledge:
+- Catalogue of 1,842 marine species identified via otolith morphometry & eDNA
+- 6,391 processed eDNA samples from Indian coastal waters
+- Top detected species: Sardinella longiceps (847 reads), Rastrelliger kanagurta (623 reads), Stolephorus indicus (512 reads), Decapterus russelli (389 reads), Nemipterus japonicus (274 reads)
+- Schedule I Protected species: Rhincodon typus (Whale Shark) near Kanyakumari (8.08°N, 77.52°E) - triggers 15km exclusion zone
+- Sardine migration corridor shifts 12% northwards per 0.3°C Arabian Sea SST rise (r=0.87)
+- Privacy-preserving Federated Learning models across CMLRE (Kochi), FSI (Mumbai), and Agharkar (Pune)
+
+Style: Ecological and taxonomical expertise. Always italicize scientific names (*Sardinella longiceps*), cite specific sample IDs, and highlight conservation status. Do not include raw API error strings.`
+};
+
+const BOT_CONFIG = {
+  energy: {
+    id: 'energy',
+    name: 'Energy & Siting Advisor',
+    tagline: 'Offshore Renewable Energy, Bathymetry & Digital Twin Siting',
+    icon: Zap,
+    color: '#f59e0b',
+    badgeClass: 'amber',
+    placeholder: 'Ask about wave energy, Site-7 vs Site-3, capacity factors, tidal currents...',
+    suggestions: [
+      '⚡ Wave energy potential by zone',
+      '📊 Compare Site-7 vs Site-3',
+      '🌀 Tidal turbine capacity factors',
+      '🖥️ Digital Twin simulation details'
+    ],
+    initialMessages: [
+      { role: 'user', text: 'Which zones have the highest wave energy potential with minimal biodiversity impact?' },
+      { role: 'ai', text: 'Based on current INCOIS hydrodynamic data, **Zone 7** (off Kerala coast) shows **42 GW theoretical potential** with a biodiversity impact score of only **2.1/10** — the most favorable ratio in the dataset.\n\n**Top Energy Zones Comparison:**\n1. **Zone 7 (Kerala Coast)**: 42 GW Potential • 2.1/10 Impact Score • 3.4m Tidal Range\n2. **Zone 3 (Gulf of Kutch)**: 31 GW Potential • 3.4/10 Impact Score • 2.8m Tidal Range\n3. **Site-9 (Kanyakumari)**: 28 GW Potential • 4.2/10 Impact Score • 2.9m Tidal Range\n\nI recommend prioritizing **Site-7** for pilot 50 MW tidal turbine array deployment.' }
+    ],
+    canned: [
+      "Cross-referencing bathymetry data with tidal current models, 3 new potential micro-sites within Zone-7 have been identified that could support 50 MW tidal arrays with estimated capacity factors of 28–34%.\n\nThe digital twin simulation indicates minimal disruption to the existing *Sardinella longiceps* migration corridor, with marine traffic disruption projected at only 14.2% — well within the MoES acceptable threshold of 25%.",
+      "Current ocean current data from INCOIS shows the West India Coastal Current (WICC) is 15% stronger than the seasonal average. This improves energy yield projections for Sites 3, 5, and 7 by approximately 8–12%.\n\nHowever, increased current velocity also raises sediment transport rates, which may affect turbine maintenance schedules. The Digital Twin model recommends increasing maintenance intervals from quarterly to bi-monthly for the September–November period.",
+      "Based on 10-year wave climate hindcasts from INCOIS, Site-3 (Gulf of Kutch) offers high energy density (24.2 kW/m wave crest), but extreme monsoon wave heights (>4.2m) require heavy gravity-based turbine foundations.\n\nSite-7 requires 35% lower structural steel per MW capacity while maintaining 87% of the annual energy production."
+    ]
+  },
+  bio: {
+    id: 'bio',
+    name: 'Biodiversity & eDNA Specialist',
+    tagline: 'Molecular Taxonomy, eDNA Species Matching & Migration Tracking',
+    icon: Dna,
+    color: '#22d3ee',
+    badgeClass: 'cyan',
+    placeholder: 'Ask about eDNA reads, sardine migration, otolith morphometry, whale shark alerts...',
+    suggestions: [
+      '🧬 Latest eDNA detection trends',
+      '🐟 Sardine migration forecast',
+      '🔬 Otolith age estimation method',
+      '🦈 Whale shark exclusion zones'
+    ],
+    initialMessages: [
+      { role: 'user', text: 'What species are most frequently detected via eDNA near proposed energy sites?' },
+      { role: 'ai', text: 'Across the 14 proposed marine energy sites, the top species catalogued via eDNA barcoding are:\n\n1. *Sardinella longiceps* (Indian Oil Sardine) — **847 detections** (Sample SM-eDNA-2024-1847)\n2. *Rastrelliger kanagurta* (Indian Mackerel) — **623 detections** (Sample SM-eDNA-2024-1843)\n3. *Stolephorus indicus* (Indian Anchovy) — **512 detections**\n4. *Decapterus russelli* (Indian Scad) — **389 detections**\n5. *Nemipterus japonicus* (Japanese Threadfin Bream) — **274 detections**\n\nSardine density shows a strong positive correlation (**r=0.87**) with Sea Surface Temperature (SST) in Zone-3.' }
+    ],
+    canned: [
+      "The most recent eDNA analysis from Kanyakumari Station detected traces of *Rhincodon typus* (Whale Shark), a Schedule I protected species under the Wildlife Protection Act, 1972. This detection has been automatically flagged to the Biodiversity Impact Assessment module.\n\nExclusion zones for Site-9 have been updated accordingly, with a recommended 15 km buffer radius around the detection coordinates (8.08°N, 77.52°E).",
+      "The federated model's latest aggregation shows improved species classification accuracy at 96.4% across all 3 partner institutes. Notably, the Agharkar Research Institute's coral reef habitat data improved shallow-water predictions without exposing raw biodiversity survey records.\n\nNext aggregation cycle is scheduled for 2026-08-25. The model currently covers 1,842 species with >85% confidence thresholds.",
+      "Otolith morphometry analysis on *Sardinella longiceps* specimens collected off Kochi indicates a major axis length of 4.82 mm and aspect ratio of 2.03, corresponding to a 2–3 year age cohort. Morphometric growth curves indicate healthy population recruitment in Kerala coastal waters."
+    ]
+  }
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
 // GEMINI HELPER WITH MODEL FALLBACKS
 // ══════════════════════════════════════════════════════════════════════════════
 
@@ -300,23 +381,23 @@ let geminiChat = null;
 let activeGeminiModel = null;
 
 const GEMINI_MODELS = [
-  'gemini-2.5-flash',
   'gemini-1.5-flash',
   'gemini-1.5-pro',
-  'gemini-1.5-flash-latest'
+  'gemini-1.5-flash-8b',
+  'gemini-2.0-flash-exp'
 ];
 
-async function initGeminiChat(apiKey) {
+async function initGeminiChat(apiKey, botMode = 'energy') {
   const genAI = new GoogleGenerativeAI(apiKey);
   for (const modelName of GEMINI_MODELS) {
     try {
       const model = genAI.getGenerativeModel({
         model: modelName,
-        systemInstruction: GEMINI_SYSTEM_PROMPT,
+        systemInstruction: GEMINI_SYSTEM_PROMPTS[botMode] || GEMINI_SYSTEM_PROMPTS.energy,
       });
       geminiChat = model.startChat({ history: [] });
       activeGeminiModel = modelName;
-      console.log(`Successfully initialized Gemini chat with model: ${modelName}`);
+      console.log(`Successfully initialized Gemini chat (${botMode}) with model: ${modelName}`);
       return geminiChat;
     } catch (err) {
       console.warn(`Model init failed for ${modelName}:`, err);
@@ -325,15 +406,15 @@ async function initGeminiChat(apiKey) {
   throw new Error('Could not initialize Gemini model.');
 }
 
-async function sendGeminiMessage(message) {
+async function sendGeminiMessage(message, botMode = 'energy') {
   if (!geminiChat) return null;
   try {
     const result = await geminiChat.sendMessage(message);
     return result.response.text();
   } catch (err) {
     console.error('Gemini sendMessage error:', err);
-    return `*Note: Live API returned an error (${err.message}). Defaulting to Sagar-Manthan system knowledge response:*\n\n` +
-           cannedResponses[Math.floor(Math.random() * cannedResponses.length)];
+    const pool = BOT_CONFIG[botMode].canned;
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 }
 
@@ -412,15 +493,15 @@ export default function App() {
     energy: true,
     digitalTwin: false,
   });
-  const [turbineCapacity, setTurbineCapacity] = useState(50);
-  const [chatMessages, setChatMessages] = useState(initialChat);
+  const [activeBot, setActiveBot] = useState('energy'); // 'energy' or 'bio'
+  const [energyMessages, setEnergyMessages] = useState(BOT_CONFIG.energy.initialMessages);
+  const [bioMessages, setBioMessages] = useState(BOT_CONFIG.bio.initialMessages);
   const [chatInput, setChatInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [logEntries, setLogEntries] = useState(initialAgentLogs);
   const [geminiConnected, setGeminiConnected] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const chatEndRef = useRef(null);
-  const responseIdxRef = useRef(0);
 
   // Clock
   useEffect(() => {
@@ -432,9 +513,9 @@ export default function App() {
   useEffect(() => {
     const key = import.meta.env.VITE_GEMINI_API_KEY;
     if (key && !geminiConnected) {
-      initGeminiChat(key).then(() => setGeminiConnected(true)).catch(() => {});
+      initGeminiChat(key, activeBot).then(() => setGeminiConnected(true)).catch(() => {});
     }
-  }, []);
+  }, [activeBot]);
 
   // Live agent log
   useEffect(() => {
@@ -458,29 +539,42 @@ export default function App() {
   // Auto-scroll chat
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatMessages, isTyping]);
-
-
+  }, [energyMessages, bioMessages, isTyping, activeBot]);
 
   const handleSendChat = useCallback(async () => {
     if (!chatInput.trim() || isTyping) return;
     const userMsg = chatInput.trim();
-    setChatMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setChatInput('');
     setIsTyping(true);
 
+    if (activeBot === 'energy') {
+      setEnergyMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    } else {
+      setBioMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    }
+
     if (geminiConnected) {
-      const resp = await sendGeminiMessage(userMsg);
-      setChatMessages(prev => [...prev, { role: 'ai', text: resp || 'No response received.' }]);
+      const resp = await sendGeminiMessage(userMsg, activeBot);
+      const reply = resp || 'No response received from model.';
+      if (activeBot === 'energy') {
+        setEnergyMessages(prev => [...prev, { role: 'ai', text: reply }]);
+      } else {
+        setBioMessages(prev => [...prev, { role: 'ai', text: reply }]);
+      }
       setIsTyping(false);
     } else {
       setTimeout(() => {
-        setChatMessages(prev => [...prev, { role: 'ai', text: cannedResponses[responseIdxRef.current % cannedResponses.length] }]);
-        responseIdxRef.current++;
+        const pool = BOT_CONFIG[activeBot].canned;
+        const text = pool[Math.floor(Math.random() * pool.length)];
+        if (activeBot === 'energy') {
+          setEnergyMessages(prev => [...prev, { role: 'ai', text }]);
+        } else {
+          setBioMessages(prev => [...prev, { role: 'ai', text }]);
+        }
         setIsTyping(false);
-      }, 1200 + Math.random() * 800);
+      }, 1000 + Math.random() * 600);
     }
-  }, [chatInput, isTyping, geminiConnected]);
+  }, [chatInput, isTyping, geminiConnected, activeBot]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendChat(); }
@@ -542,10 +636,17 @@ export default function App() {
         {activeTab === 'edna' && <EDNAModule tc={turbineCapacity} setTc={setTurbineCapacity} td={trafficDisruption} bi={biodiversityImpact} ae={annualEnergy} />}
         {activeTab === 'chat' && (
           <ChatModule
-            messages={chatMessages} input={chatInput} setInput={setChatInput}
-            onSend={handleSendChat} onKeyDown={handleKeyDown} isTyping={isTyping}
-            chatEndRef={chatEndRef} geminiConnected={geminiConnected}
-            setChatMessages={setChatMessages}
+            activeBot={activeBot}
+            setActiveBot={setActiveBot}
+            messages={activeBot === 'energy' ? energyMessages : bioMessages}
+            input={chatInput}
+            setInput={setChatInput}
+            onSend={handleSendChat}
+            onKeyDown={handleKeyDown}
+            isTyping={isTyping}
+            chatEndRef={chatEndRef}
+            geminiConnected={geminiConnected}
+            setMessages={activeBot === 'energy' ? setEnergyMessages : setBioMessages}
           />
         )}
       </main>
@@ -1137,10 +1238,17 @@ function EDNAModule({ tc, setTc, td, bi, ae }) {
 
 
 // ══════════════════════════════════════════════════════════════════════════════
-// 5. CHAT MODULE (Gemini-powered)
+// 5. CHAT MODULE (Dual Bot Architecture)
 // ══════════════════════════════════════════════════════════════════════════════
 
-function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, chatEndRef, geminiConnected, setChatMessages }) {
+function ChatModule({
+  activeBot, setActiveBot,
+  messages, input, setInput,
+  onSend, onKeyDown, isTyping,
+  chatEndRef, geminiConnected, setMessages
+}) {
+  const currentConfig = BOT_CONFIG[activeBot];
+  const IconComponent = currentConfig.icon;
   const [copiedIdx, setCopiedIdx] = useState(null);
 
   const handleCopy = (text, idx) => {
@@ -1150,7 +1258,7 @@ function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, ch
   };
 
   const handleClear = () => {
-    setChatMessages(initialChat);
+    setMessages(currentConfig.initialMessages);
   };
 
   return (
@@ -1158,30 +1266,55 @@ function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, ch
       <div className="chat-header">
         <div className="chat-header-title">
           <h2>Ask Sagar-Manthan</h2>
-          <p>Conversational ocean intelligence powered by Google Gemini AI</p>
+          <p>{currentConfig.tagline}</p>
         </div>
+
         <div className="chat-header-actions">
+          {/* Dual Bot Segmented Switcher */}
+          <div className="bot-mode-selector">
+            <button
+              className={`bot-mode-btn energy ${activeBot === 'energy' ? 'active' : ''}`}
+              onClick={() => setActiveBot('energy')}
+            >
+              <Zap size={13} /> Energy & Siting
+            </button>
+            <button
+              className={`bot-mode-btn bio ${activeBot === 'bio' ? 'active' : ''}`}
+              onClick={() => setActiveBot('bio')}
+            >
+              <Dna size={13} /> Biodiversity & eDNA
+            </button>
+          </div>
+
           {geminiConnected && (
             <div className="status-badge green"><Sparkles size={11} /> Gemini Live</div>
           )}
           <button className="chat-action-btn" onClick={handleClear} title="Clear conversation history">
-            <RotateCcw size={13} /> Clear Chat
+            <RotateCcw size={13} /> Reset
           </button>
         </div>
       </div>
 
       {/* Suggested prompt chips */}
       <div className="prompt-chips">
-        {promptSuggestions.map((s, i) => (
-          <button key={i} className="prompt-chip" onClick={() => setInput(s)}>{s}</button>
+        {currentConfig.suggestions.map((s, i) => (
+          <button
+            key={i}
+            className="prompt-chip"
+            onClick={() => setInput(s.replace(/^[^\w\s]+\s*/, ''))}
+          >
+            {s}
+          </button>
         ))}
       </div>
 
       {/* Messages */}
       <div className="chat-messages" id="chat-messages">
         {messages.map((msg, i) => (
-          <div key={i} className={`chat-msg ${msg.role === 'user' ? 'user' : 'ai'}`}>
-            <div className="chat-avatar">{msg.role === 'ai' ? <Waves size={15} /> : 'You'}</div>
+          <div key={i} className={`chat-msg ${msg.role === 'user' ? 'user' : `ai ${activeBot}`}`}>
+            <div className="chat-avatar">
+              {msg.role === 'ai' ? <IconComponent size={15} /> : 'You'}
+            </div>
             <div className="chat-bubble-wrapper">
               <div className="chat-bubble">
                 <FormattedChatText text={msg.text} />
@@ -1196,8 +1329,8 @@ function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, ch
           </div>
         ))}
         {isTyping && (
-          <div className="chat-msg ai">
-            <div className="chat-avatar"><Waves size={15} /></div>
+          <div className={`chat-msg ai ${activeBot}`}>
+            <div className="chat-avatar"><IconComponent size={15} /></div>
             <div className="chat-bubble">
               <div className="typing-indicator"><div className="typing-dot" /><div className="typing-dot" /><div className="typing-dot" /></div>
             </div>
@@ -1209,8 +1342,18 @@ function ChatModule({ messages, input, setInput, onSend, onKeyDown, isTyping, ch
       {/* Input */}
       <div className="chat-input-area">
         <div className="chat-input-wrapper">
-          <input type="text" className="chat-input" placeholder="Ask about ocean data, energy sites, sardine migration, eDNA..." value={input} onChange={e => setInput(e.target.value)} onKeyDown={onKeyDown} id="chat-input" />
-          <button className="chat-send-btn" onClick={onSend} disabled={isTyping} id="chat-send-btn"><Send size={15} /> Send</button>
+          <input
+            type="text"
+            className="chat-input"
+            placeholder={currentConfig.placeholder}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={onKeyDown}
+            id="chat-input"
+          />
+          <button className="chat-send-btn" onClick={onSend} disabled={isTyping} id="chat-send-btn">
+            <Send size={15} /> Send
+          </button>
         </div>
       </div>
     </div>
