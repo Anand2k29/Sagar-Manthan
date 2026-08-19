@@ -975,7 +975,7 @@ function GISMap({ layers, toggleLayer }) {
           <div className="station-inspector-header">
             <div className="station-inspector-title">
               <h3>{selectedStation.name}</h3>
-              <p>Lat: {selectedStation.lat.toFixed(2)}°N, Long: {selectedStation.lng.toFixed(2)}°E • Station ID: {selectedStation.id.toUpperCase()}</p>
+              <p>Lat: {selectedStation.lat.toFixed(2)}°N, Long: {selectedStation.lng.toFixed(2)}°E • Station ID: STN-{String(selectedStation.id).toUpperCase()}</p>
             </div>
             <div className="status-badge green">
               <Activity size={12} /> Live In-Situ Telemetry Feed
