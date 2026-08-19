@@ -895,7 +895,101 @@ input[type="range"]::-moz-range-thumb {
 .impact-card.caution .impact-value { color: var(--amber); }
 .impact-card.safe .impact-value { color: var(--green); }
 
-/* Partner cards */
+/* eDNA Card Active */
+.dna-match-card {
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.dna-match-card:hover { border-color: var(--cyan); transform: translateY(-1px); }
+
+.dna-match-card.active {
+  border-color: var(--cyan);
+  background: rgba(34, 211, 238, 0.08);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.2);
+}
+
+/* Sequence alignment */
+.seq-align-box {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+  overflow-x: auto;
+}
+
+.seq-line { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.seq-label { width: 60px; color: var(--text-muted); font-size: 0.65rem; text-transform: uppercase; flex-shrink: 0; }
+.seq-bases { letter-spacing: 0.08em; display: flex; gap: 1px; flex-wrap: wrap; }
+
+.base-match { color: var(--green); }
+.base-mismatch { color: var(--red); background: rgba(248, 113, 113, 0.2); padding: 0 2px; border-radius: 2px; font-weight: 700; }
+
+/* Taxonomy badges */
+.taxonomy-chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tax-badge {
+  padding: 3px 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.68rem;
+  color: var(--cyan);
+}
+
+/* Preset buttons */
+.preset-group {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  padding: 4px 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.preset-btn:hover { border-color: var(--amber); color: var(--amber); }
+.preset-btn.active { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); font-weight: 600; }
+
+/* Sync button */
+.sync-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, var(--seafoam), var(--cyan));
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--bg-deep);
+  font-weight: 600;
+  font-size: 0.74rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-sans);
+}
+
+.sync-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.sync-btn.syncing svg { animation: spin 1s linear infinite; }
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .partner-card {
   display: flex;
   align-items: center;

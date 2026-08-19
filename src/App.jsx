@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Legend, LineChart, Line
+  ResponsiveContainer, Legend, LineChart, Line, BarChart, Bar, Cell
 } from 'recharts';
 import {
   MapContainer, TileLayer, CircleMarker, Popup, Polyline, Circle, LayerGroup
@@ -10,7 +10,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import {
   Waves, Activity, Fish, Dna, MessageCircle, Radio, FlaskConical, Zap,
   Upload, Send, Shield, X, Globe, Bot, Microscope, ScanLine,
-  Wind, ArrowUpRight, CheckCircle2, Clock, Eye, Radar
+  Wind, ArrowUpRight, CheckCircle2, Clock, Eye, Radar, RefreshCw, Sliders, Cpu, Layers
 } from 'lucide-react';
 import './App.css';
 
@@ -208,9 +208,63 @@ const specimenData = [
 ];
 
 const dnaMatchResults = [
-  { species: 'Sardinella longiceps', match: '98.7%', location: 'Off Kochi, Kerala', depth: '12m', sample: 'SM-eDNA-2024-1847' },
-  { species: 'Rastrelliger kanagurta', match: '95.2%', location: 'Malvan, Maharashtra', depth: '28m', sample: 'SM-eDNA-2024-1843' },
-  { species: 'Thunnus albacares', match: '89.1%', location: 'Lakshadweep Sea', depth: '85m', sample: 'SM-eDNA-2024-1839' },
+  {
+    id: 0,
+    species: 'Sardinella longiceps',
+    commonName: 'Indian Oil Sardine',
+    match: '98.7%',
+    location: 'Off Kochi, Kerala',
+    depth: '12m',
+    sample: 'SM-eDNA-2024-1847',
+    taxonomy: ['Animalia', 'Chordata', 'Actinopterygii', 'Clupeiformes', 'Sardinella'],
+    targetSeq: 'ATCGTTAGGCCACTGAAATCGGTATACGCCTAATGCGAATTTCGCAGC',
+    refSeq:    'ATCGTTAGGCCACTGAAATCGGTATACGCCTAATGCGAATTTCGCAGC',
+    depthProfile: [
+      { depth: '5m', copies: 14200 },
+      { depth: '15m', copies: 28900 },
+      { depth: '30m', copies: 18500 },
+      { depth: '50m', copies: 4200 },
+      { depth: '100m', copies: 800 },
+    ]
+  },
+  {
+    id: 1,
+    species: 'Rastrelliger kanagurta',
+    commonName: 'Indian Mackerel',
+    match: '95.2%',
+    location: 'Malvan, Maharashtra',
+    depth: '28m',
+    sample: 'SM-eDNA-2024-1843',
+    taxonomy: ['Animalia', 'Chordata', 'Actinopterygii', 'Scombriformes', 'Rastrelliger'],
+    targetSeq: 'TTAGGCCACTGAAATCGGTATACGCCTAATGCGAATTTCGCAGCATCG',
+    refSeq:    'TTAGGCCACTGAAATCGGTATACGCCTAATGCGAATTTCGCAGCTTCG',
+    depthProfile: [
+      { depth: '5m', copies: 8200 },
+      { depth: '15m', copies: 19400 },
+      { depth: '30m', copies: 31200 },
+      { depth: '50m', copies: 14500 },
+      { depth: '100m', copies: 2100 },
+    ]
+  },
+  {
+    id: 2,
+    species: 'Thunnus albacares',
+    commonName: 'Yellowfin Tuna',
+    match: '89.1%',
+    location: 'Lakshadweep Sea',
+    depth: '85m',
+    sample: 'SM-eDNA-2024-1839',
+    taxonomy: ['Animalia', 'Chordata', 'Actinopterygii', 'Scombriformes', 'Thunnus'],
+    targetSeq: 'GGTATACGCCTAATGCGAATTTCGCAGCATCGTTAGGCCACTGAAATC',
+    refSeq:    'GGTATACGCCTAATGCGAATTTCGCAGCATCCTTAGGCCACTGAAACC',
+    depthProfile: [
+      { depth: '5m', copies: 1200 },
+      { depth: '15m', copies: 4500 },
+      { depth: '30m', copies: 12800 },
+      { depth: '50m', copies: 24600 },
+      { depth: '100m', copies: 38200 },
+    ]
+  },
 ];
 
 const initialChat = [
@@ -762,10 +816,90 @@ function OtolithModule() {
 
 
 // ══════════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════════
+// DIGITAL TWIN TURBINE VISUALIZER
+// ══════════════════════════════════════════════════════════════════════════════
+
+function DigitalTwinTurbineSVG({ capacity }) {
+  const duration = Math.max(0.6, (4 - (capacity / 200) * 3.2)).toFixed(1);
+  const turbineCount = capacity > 130 ? 4 : capacity > 75 ? 3 : capacity > 30 ? 2 : 1;
+
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '170px', background: 'linear-gradient(180deg, #071927 0%, #040c16 100%)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', margin: '14px 0' }}>
+      <svg viewBox="0 0 500 170" style={{ width: '100%', height: '100%' }}>
+        <defs>
+          <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#040c16" stopOpacity="0.95" />
+          </linearGradient>
+        </defs>
+
+        {/* Water background */}
+        <path d="M 0 30 Q 125 25, 250 30 T 500 30 L 500 170 L 0 170 Z" fill="url(#waterGrad)" />
+        <line x1="0" y1="30" x2="500" y2="30" stroke="#22d3ee" strokeWidth="1" strokeDasharray="6 4" opacity="0.6" />
+        <text x="15" y="22" fill="#22d3ee" fontSize="9" fontFamily="Inter" opacity="0.8">Surface Waves</text>
+        <text x="15" y="160" fill="#64748b" fontSize="8" fontFamily="Inter">Seabed (35m)</text>
+
+        {/* Turbines */}
+        {[...Array(turbineCount)].map((_, i) => {
+          const cx = (500 / (turbineCount + 1)) * (i + 1);
+          return (
+            <g key={i}>
+              <line x1={cx} y1="150" x2={cx} y2="75" stroke="#475569" strokeWidth="5" strokeLinecap="round" />
+              <circle cx={cx} cy="75" r="7" fill="#f59e0b" />
+              <g transform={`translate(${cx}, 75)`}>
+                <g style={{ animation: `spin ${duration}s linear infinite`, transformOrigin: '0px 0px' }}>
+                  <line x1="0" y1="0" x2="0" y2="-28" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="0" y1="0" x2="24" y2="14" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="0" y1="0" x2="-24" y2="14" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round" />
+                </g>
+              </g>
+              <path d={`M ${cx + 10} 75 C ${cx + 35} 65, ${cx + 55} 85, ${cx + 75} 75`} fill="none" stroke="rgba(245,158,11,0.25)" strokeWidth="1.2" strokeDasharray="3 3" />
+            </g>
+          );
+        })}
+
+        {/* Fish migration detour */}
+        <path d="M 15 110 C 120 110, 180 135, 300 130 C 380 125, 440 105, 485 110" fill="none" stroke="#2dd4bf" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.75">
+          <animate attributeName="stroke-dashoffset" values="0;-24" dur="3s" repeatCount="indefinite" />
+        </path>
+        <text x="320" y="145" fill="#2dd4bf" fontSize="8" fontFamily="Inter" opacity="0.85">Fish Migration Corridor Detour</text>
+      </svg>
+      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
 // 4. eDNA & DIGITAL TWIN
 // ══════════════════════════════════════════════════════════════════════════════
 
 function EDNAModule({ tc, setTc, td, bi, ae }) {
+  const [selectedDna, setSelectedDna] = useState(dnaMatchResults[0]);
+  const [syncing, setSyncing] = useState(false);
+  const [syncTime, setSyncTime] = useState('2026-08-19 10:45 IST');
+  const [syncSuccess, setSyncSuccess] = useState(false);
+
+  const presets = [
+    { label: '25 MW Pilot', val: 25 },
+    { label: '50 MW Optimal', val: 50 },
+    { label: '100 MW Medium', val: 100 },
+    { label: '175 MW Commercial', val: 175 },
+  ];
+
+  const handleSyncFederated = () => {
+    setSyncing(true);
+    setSyncSuccess(false);
+    setTimeout(() => {
+      setSyncing(false);
+      setSyncSuccess(true);
+      const now = new Date();
+      setSyncTime(`${now.toISOString().slice(0,10)} ${now.toLocaleTimeString('en-IN', { hour12: false })} IST`);
+      setTimeout(() => setSyncSuccess(false), 4000);
+    }, 1200);
+  };
+
   return (
     <div className="tab-content" id="edna-module">
       <div className="section-header">
@@ -774,45 +908,118 @@ function EDNAModule({ tc, setTc, td, bi, ae }) {
       </div>
 
       <div className="edna-grid">
+        {/* Left Column: eDNA Match Results + Sequence Inspector */}
         <div>
-          <div className="section-title">eDNA Sequence Match Results</div>
-          {dnaMatchResults.map((r, i) => (
-            <div key={i} className="card dna-match-card">
-              <div className="dna-sequence">
-                <span className="highlight-a">ATCG</span><span className="highlight-t">TTAG</span><span className="highlight-g">GCCA</span><span className="highlight-c">CTGA</span>{' '}
-                <span className="highlight-a">AATC</span><span className="highlight-g">GGTA</span><span className="highlight-t">TACG</span><span className="highlight-c">CCTA</span>{' '}
-                <span className="highlight-a">ATGC</span><span className="highlight-g">GAAT</span><span className="highlight-t">TTCG</span><span className="highlight-c">CAGC</span>...
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+          <div className="section-title">eDNA Sequence Match Results (Click to inspect)</div>
+          {dnaMatchResults.map((r) => (
+            <div
+              key={r.id}
+              className={`card dna-match-card ${selectedDna.id === r.id ? 'active' : ''}`}
+              onClick={() => setSelectedDna(r)}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <div>
                   <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#2dd4bf', fontStyle: 'italic' }}>{r.species}</div>
-                  <div style={{ fontSize: '0.68rem', color: '#64748b', fontFamily: 'var(--font-mono)' }}>{r.sample}</div>
+                  <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>{r.commonName} • <span style={{ fontFamily: 'var(--font-mono)', color: '#64748b' }}>{r.sample}</span></div>
                 </div>
                 <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#22d3ee' }}>{r.match}</div>
               </div>
-              <div style={{ display: 'flex', gap: '14px', fontSize: '0.74rem', color: '#94a3b8' }}>
-                <span>📍 {r.location}</span><span>🌊 {r.depth}</span>
+              <div style={{ display: 'flex', gap: '14px', fontSize: '0.74rem', color: '#94a3b8', marginTop: '6px' }}>
+                <span>📍 {r.location}</span><span>🌊 Depth: {r.depth}</span>
               </div>
             </div>
           ))}
+
+          {/* Sequence Inspector Panel */}
+          <div className="card" style={{ marginTop: '1.25rem' }}>
+            <div className="card-header">
+              <div className="card-title"><Dna size={15} /> Sequence Alignment & Taxonomy Inspector</div>
+              <div className="status-badge green"><CheckCircle2 size={10} /> GenBank Verified</div>
+            </div>
+
+            {/* Taxonomy Lineage Chain */}
+            <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '6px' }}>Taxonomic Lineage:</div>
+            <div className="taxonomy-chain">
+              {selectedDna.taxonomy.map((t, i) => (
+                <span key={i} className="tax-badge">{t}</span>
+              ))}
+            </div>
+
+            {/* Alignment Box */}
+            <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '4px' }}>Base Pair Alignment (Target vs Ref):</div>
+            <div className="seq-align-box">
+              <div className="seq-line">
+                <span className="seq-label">Target:</span>
+                <span className="seq-bases">
+                  {selectedDna.targetSeq.split('').map((char, i) => (
+                    <span key={i} className={char === selectedDna.refSeq[i] ? 'base-match' : 'base-mismatch'}>{char}</span>
+                  ))}
+                </span>
+              </div>
+              <div className="seq-line">
+                <span className="seq-label">Ref:</span>
+                <span className="seq-bases">
+                  {selectedDna.refSeq.split('').map((char, i) => (
+                    <span key={i} style={{ color: '#94a3b8' }}>{char}</span>
+                  ))}
+                </span>
+              </div>
+            </div>
+
+            {/* Depth Profile Copy Count Chart */}
+            <div style={{ fontSize: '0.72rem', color: '#64748b', margin: '10px 0 6px' }}>eDNA Concentration Profile (Copies / Liter by Depth):</div>
+            <div style={{ width: '100%', height: '120px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={selectedDna.depthProfile} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <XAxis dataKey="depth" stroke="#4a5568" fontSize={10} tickLine={false} />
+                  <YAxis stroke="#4a5568" fontSize={9} tickLine={false} />
+                  <Tooltip contentStyle={{ background: 'rgba(6,14,24,0.95)', border: '1px solid rgba(34,211,238,0.15)', borderRadius: '6px', fontSize: '10px' }} />
+                  <Bar dataKey="copies" fill="#2dd4bf" radius={[4, 4, 0, 0]}>
+                    {selectedDna.depthProfile.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={index === 1 || index === 2 ? '#22d3ee' : '#2dd4bf'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
 
+        {/* Right Column: Digital Twin Simulator + Underwater Visualizer + Federated Learning */}
         <div>
-          <div className="section-title">Digital Twin Simulator</div>
+          <div className="section-title">Digital Twin Turbine Simulator</div>
           <div className="card" id="digital-twin-panel" style={{ padding: '1.25rem' }}>
             <div className="card-header">
-              <div className="card-title"><ScanLine size={15} /> Tidal Turbine Impact Model</div>
+              <div className="card-title"><ScanLine size={15} /> Tidal Turbine Hydrodynamic Impact Model</div>
+              <div className="status-badge amber"><Sliders size={10} /> Live Simulation</div>
             </div>
+
             <div className="slider-container">
               <div className="slider-header">
                 <span className="slider-label">Proposed Turbine Capacity</span>
                 <span className="slider-value">{tc} MW</span>
               </div>
               <input type="range" min="10" max="200" value={tc} onChange={e => setTc(+e.target.value)} id="turbine-slider" />
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', color: '#64748b', marginTop: '4px' }}>
-                <span>10 MW</span><span>200 MW</span>
+              
+              {/* Presets */}
+              <div className="preset-group">
+                {presets.map(p => (
+                  <button
+                    key={p.val}
+                    className={`preset-btn ${tc === p.val ? 'active' : ''}`}
+                    onClick={() => setTc(p.val)}
+                  >
+                    {p.label}
+                  </button>
+                ))}
               </div>
             </div>
+
+            {/* Dynamic Underwater Turbine Visualizer SVG */}
+            <DigitalTwinTurbineSVG capacity={tc} />
+
+            {/* Metrics Breakdown */}
             <div className="impact-metrics" id="impact-metrics">
               <div className={`impact-card ${td > 40 ? 'warning' : td > 20 ? 'caution' : 'safe'}`}>
                 <div className="impact-value">{td}%</div>
@@ -827,25 +1034,43 @@ function EDNAModule({ tc, setTc, td, bi, ae }) {
                 <div className="impact-label">Est. Annual Energy (MWh)</div>
               </div>
             </div>
+
+            {/* Multi-Factor Sub Metrics */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginTop: '10px', fontSize: '0.7rem', color: '#94a3b8', background: 'var(--bg-surface)', padding: '8px 12px', borderRadius: '8px' }}>
+              <div>🔊 Noise: <strong style={{ color: '#e2e8f0' }}>{(tc * 0.6 + 65).toFixed(1)} dB</strong></div>
+              <div>🏗️ Benthic Footprint: <strong style={{ color: '#e2e8f0' }}>{(tc * 0.12).toFixed(1)} ha</strong></div>
+              <div>🌱 CO₂ Offset: <strong style={{ color: '#4ade80' }}>{Math.round(ae * 0.82).toLocaleString()} t/yr</strong></div>
+            </div>
           </div>
 
+          {/* Federated Learning Hub */}
           <div style={{ marginTop: '1.25rem' }}>
-            <div className="section-title">Federated Learning Status</div>
+            <div className="section-title">Federated Learning Hub</div>
             <div className="card" id="federated-widget">
               <div className="card-header">
-                <div className="card-title"><Shield size={15} /> Privacy-Preserving Model Sync</div>
+                <div className="card-title"><Shield size={15} /> Privacy-Preserving Model Aggregation</div>
+                <button className={`sync-btn ${syncing ? 'syncing' : ''}`} onClick={handleSyncFederated} disabled={syncing}>
+                  <RefreshCw size={13} /> {syncing ? 'Aggregating...' : 'Sync Gradients'}
+                </button>
               </div>
+
+              {syncSuccess && (
+                <div style={{ padding: '6px 12px', background: 'var(--green-dim)', border: '1px solid rgba(74,222,128,0.2)', borderRadius: '6px', fontSize: '0.72rem', color: '#4ade80', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CheckCircle2 size={13} /> Model gradients aggregated successfully across 3 partner institutes!
+                </div>
+              )}
+
               {[
-                { name: 'CMLRE, Kochi', sync: '2026-08-19 09:47 IST' },
-                { name: 'Fishery Survey of India, Mumbai', sync: '2026-08-19 09:32 IST' },
-                { name: 'Agharkar Research Institute, Pune', sync: '2026-08-19 08:58 IST' },
+                { name: 'CMLRE, Kochi', sync: syncTime, samples: '14,820 reads', dp: 'ε = 0.45' },
+                { name: 'Fishery Survey of India, Mumbai', sync: syncTime, samples: '22,410 reads', dp: 'ε = 0.50' },
+                { name: 'Agharkar Research Institute, Pune', sync: syncTime, samples: '9,650 reads', dp: 'ε = 0.40' },
               ].map((p, i) => (
                 <div key={i} className="partner-card">
                   <div>
                     <div className="partner-name">{p.name}</div>
-                    <div className="partner-sync">Last synced: {p.sync}</div>
+                    <div className="partner-sync">Last synced: {p.sync} • {p.samples} • {p.dp}</div>
                   </div>
-                  <div className="partner-badge"><CheckCircle2 size={11} /> Model updated · Data never left premises</div>
+                  <div className="partner-badge"><CheckCircle2 size={11} /> Model updated · Raw data intact</div>
                 </div>
               ))}
             </div>
