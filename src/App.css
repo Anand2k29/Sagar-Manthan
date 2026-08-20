@@ -136,13 +136,19 @@
 .tab-nav {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
   padding: 8px 40px;
   background: #FFFFFF;
   border-bottom: 1px solid rgba(226, 232, 240, 0.8);
   position: sticky;
   top: 60px;
   z-index: 90;
+}
+
+.tab-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .tab-btn {
@@ -179,6 +185,193 @@
   background: rgba(13, 148, 136, 0.08);
   border-color: rgba(13, 148, 136, 0.25);
 }
+
+.govt-guide-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0D9488;
+  background: rgba(13, 148, 136, 0.08);
+  border: 1px solid rgba(13, 148, 136, 0.25);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 180ms;
+}
+
+.govt-guide-trigger-btn:hover {
+  background: #0D9488;
+  color: white;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   GOVT OFFICIAL PAGE GUIDANCE MODAL
+   ══════════════════════════════════════════════════════════════════ */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 200ms ease-out;
+}
+
+.guide-modal-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  animation: modalIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-gov-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: #0B1D35;
+  color: white;
+  position: relative;
+}
+
+.gov-emblem {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(20, 184, 166, 0.2);
+  color: #14B8A6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gov-agency {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #14B8A6;
+}
+
+.gov-ministry {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #E2E8F0;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 150ms;
+}
+
+.modal-close-btn:hover { color: white; }
+
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.module-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+}
+
+.target-badge {
+  font-size: 0.75rem;
+  color: #475569;
+  background: #F8FAFC;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+
+.target-badge strong { color: #0D9488; }
+
+.briefing-section h4 {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #0F172A;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+
+.briefing-section p {
+  font-size: 0.82rem;
+  color: #475569;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.briefing-section ul {
+  padding-left: 20px;
+  margin: 4px 0 0;
+}
+
+.briefing-section li {
+  font-size: 0.8rem;
+  color: #334155;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.action-callout {
+  font-size: 0.8rem;
+  color: #0F766E;
+  background: rgba(13, 148, 136, 0.08);
+  border-left: 3px solid #0D9488;
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-action-btn {
+  padding: 10px 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: white;
+  background: #0D9488;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 180ms;
+}
+
+.modal-action-btn:hover { background: #0F766E; }
+
 
 /* ══════════════════════════════════════════════════════════════════
    MAIN CONTENT AREA
@@ -304,7 +497,6 @@
   gap: 2px;
 }
 
-/* ── Standard Light Cards ── */
 .card {
   background: #FFFFFF;
   border: 1px solid rgba(226, 232, 240, 0.8);
@@ -329,9 +521,7 @@
   color: #0F172A;
 }
 
-.card-title svg {
-  color: #0D9488;
-}
+.card-title svg { color: #0D9488; }
 
 .dashboard-grid {
   display: grid;
@@ -339,7 +529,6 @@
   gap: 20px;
 }
 
-/* ── Agent Activity Log (Light Theme) ── */
 .agent-log {
   max-height: 340px;
   overflow-y: auto;
@@ -357,9 +546,7 @@
   transition: background 150ms;
 }
 
-.log-entry:hover {
-  background: #F8FAFC;
-}
+.log-entry:hover { background: #F8FAFC; }
 
 .log-dot {
   width: 7px;
@@ -376,45 +563,23 @@
 .log-dot.rose { background: #EF4444; }
 
 .log-content { flex: 1; }
-
-.log-agent {
-  font-size: 0.72rem;
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-
+.log-agent { font-size: 0.72rem; font-weight: 700; margin-bottom: 2px; }
 .log-agent.cyan { color: #06B6D4; }
 .log-agent.amber { color: #D97706; }
 .log-agent.seafoam, .log-agent.teal { color: #0D9488; }
 .log-agent.purple, .log-agent.indigo { color: #6366F1; }
 .log-agent.rose { color: #EF4444; }
 
-.log-message {
-  font-size: 0.75rem;
-  color: #475569;
-  line-height: 1.45;
-}
-
-.log-time {
-  font-size: 0.65rem;
-  font-family: 'JetBrains Mono', monospace;
-  color: #94A3B8;
-  margin-top: 4px;
-}
-
-.chart-container {
-  width: 100%;
-  height: 280px;
-}
+.log-message { font-size: 0.75rem; color: #475569; line-height: 1.45; }
+.log-time { font-size: 0.65rem; font-family: 'JetBrains Mono', monospace; color: #94A3B8; margin-top: 4px; }
+.chart-container { width: 100%; height: 280px; }
 
 
 /* ══════════════════════════════════════════════════════════════════
-   GIS MAP SECTION (LIGHT THEME MATCHING SCREENSHOT 1)
+   GIS MAP SECTION (DARK SATELLITE BASMAP INSIDE LIGHT FRAME)
    ══════════════════════════════════════════════════════════════════ */
 
-.map-section-header {
-  margin-bottom: 20px;
-}
+.map-section-header { margin-bottom: 20px; }
 
 .map-section-header h2 {
   font-size: 1.3rem;
@@ -432,7 +597,7 @@
 
 .gis-map-container {
   display: grid;
-  grid-template-columns: 240px 1fr 280px;
+  grid-template-columns: 260px 1fr 280px;
   gap: 16px;
   align-items: stretch;
 }
@@ -447,9 +612,7 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
-.left-panel {
-  justify-content: space-between;
-}
+.left-panel { justify-content: space-between; }
 
 .panel-title {
   font-size: 0.72rem;
@@ -462,27 +625,43 @@
 .layer-toggle-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .layer-toggle-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+}
+
+.layer-info-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .layer-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #0F172A;
+  display: block;
+  line-height: 1.2;
+}
+
+.layer-desc {
+  font-size: 0.62rem;
+  color: #64748B;
+  display: block;
 }
 
 /* Switch Toggle */
 .switch {
   position: relative;
   display: inline-block;
-  width: 36px;
-  height: 20px;
+  width: 34px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .switch input { opacity: 0; width: 0; height: 0; }
@@ -498,8 +677,8 @@
 .slider:before {
   position: absolute;
   content: "";
-  height: 14px;
-  width: 14px;
+  height: 12px;
+  width: 12px;
   left: 3px;
   bottom: 3px;
   background-color: white;
@@ -512,7 +691,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 .slider.round:before { border-radius: 50%; }
 
 .reset-view-btn {
-  margin-top: 24px;
+  margin-top: 20px;
   padding: 10px;
   font-size: 0.72rem;
   font-weight: 700;
@@ -526,16 +705,65 @@ input:checked + .slider:before { transform: translateX(16px); }
   text-align: center;
 }
 
-.reset-view-btn:hover {
-  background: #0D9488;
-  color: white;
-}
+.reset-view-btn:hover { background: #0D9488; color: white; }
 
 .map-view-center {
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid rgba(226, 232, 240, 0.8);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Map Color Legend Box Overlay */
+.map-color-explanation {
+  background: rgba(11, 29, 53, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 16px;
+  color: white;
+}
+
+.exp-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #14B8A6;
+  margin-bottom: 8px;
+}
+
+.exp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.exp-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  color: #CBD5E1;
+}
+
+.exp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.exp-dot.amber { background: #F59E0B; box-shadow: 0 0 8px #F59E0B; }
+.exp-dot.green { background: #10B981; box-shadow: 0 0 8px #10B981; }
+.exp-dot.cyan { background: #06B6D4; box-shadow: 0 0 8px #06B6D4; }
+
+.exp-line.cyan {
+  width: 14px;
+  height: 3px;
+  background: #06B6D4;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 
 .right-panel { gap: 16px; }
@@ -634,7 +862,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 
 
 /* ══════════════════════════════════════════════════════════════════
-   OTOLITH & TAXONOMY SECTION (LIGHT THEME MATCHING SCREENSHOT 2)
+   OTOLITH & TAXONOMY SECTION
    ══════════════════════════════════════════════════════════════════ */
 
 .otolith-top-bar { margin-bottom: 20px; }
@@ -879,7 +1107,6 @@ input:checked + .slider:before { transform: translateX(16px); }
 }
 
 .db-specimen-meta { padding: 10px; }
-
 .db-id { font-size: 0.65rem; color: #94A3B8; }
 .db-name {
   font-size: 0.78rem;
@@ -899,7 +1126,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 
 
 /* ══════════════════════════════════════════════════════════════════
-   eDNA & DIGITAL TWIN MODULE (LIGHT THEME)
+   eDNA & DIGITAL TWIN MODULE
    ══════════════════════════════════════════════════════════════════ */
 
 .edna-grid {
@@ -918,9 +1145,7 @@ input:checked + .slider:before { transform: translateX(16px); }
   transition: all 200ms;
 }
 
-.dna-match-card:hover {
-  border-color: rgba(13, 148, 136, 0.3);
-}
+.dna-match-card:hover { border-color: rgba(13, 148, 136, 0.3); }
 
 .dna-match-card.active {
   border-color: #0D9488;
@@ -1100,17 +1325,8 @@ input[type="range"]::-webkit-slider-thumb {
   border-bottom: 1px solid #F1F5F9;
 }
 
-.partner-name {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #0F172A;
-}
-
-.partner-sync {
-  font-size: 0.68rem;
-  color: #64748B;
-  margin-top: 2px;
-}
+.partner-name { font-size: 0.82rem; font-weight: 700; color: #0F172A; }
+.partner-sync { font-size: 0.68rem; color: #64748B; margin-top: 2px; }
 
 .partner-badge {
   display: inline-flex;
@@ -1135,6 +1351,7 @@ input[type="range"]::-webkit-slider-thumb {
   justify-content: space-between;
   margin-bottom: 16px;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .chat-header-title h2 {
@@ -1148,6 +1365,13 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 0.78rem;
   color: #64748B;
   margin: 0;
+}
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .bot-mode-selector {
@@ -1184,6 +1408,27 @@ input[type="range"]::-webkit-slider-thumb {
   background: #FFFFFF;
   color: #0D9488;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.chat-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #475569;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 180ms;
+}
+
+.chat-action-btn:hover {
+  color: #0D9488;
+  border-color: rgba(13, 148, 136, 0.3);
+  background: rgba(13, 148, 136, 0.04);
 }
 
 .prompt-chips {
@@ -1242,8 +1487,9 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .chat-msg.user .chat-avatar {
-  background: #0B1D35;
-  color: #FFFFFF;
+  background: rgba(13, 148, 136, 0.12);
+  color: #0D9488;
+  border: 1px solid rgba(13, 148, 136, 0.2);
 }
 
 .chat-msg.ai .chat-avatar {
@@ -1261,8 +1507,9 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .chat-msg.user .chat-bubble {
-  background: #0B1D35;
+  background: #0D9488;
   color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.2);
 }
 
 .chat-msg.ai .chat-bubble {
@@ -1340,6 +1587,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 @media (max-width: 1100px) {
   .gis-map-container { grid-template-columns: 1fr; }
+  .exp-grid { grid-template-columns: 1fr; }
   .otolith-main-grid { grid-template-columns: 1fr; }
   .database-cards-row { grid-template-columns: repeat(2, 1fr); }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1351,6 +1599,6 @@ input[type="range"]::-webkit-slider-thumb {
   .kpi-grid { grid-template-columns: 1fr; }
   .database-cards-row { grid-template-columns: 1fr; }
   .navbar { padding: 0 16px; }
-  .tab-nav { padding: 8px 16px; overflow-x: auto; }
+  .tab-nav { padding: 8px 16px; flex-direction: column; gap: 8px; align-items: stretch; }
   .main-content { padding: 20px 16px 32px; }
 }

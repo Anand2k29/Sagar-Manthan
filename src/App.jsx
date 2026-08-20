@@ -12,7 +12,8 @@ import {
   Waves, Activity, Fish, Dna, MessageCircle, Radio, FlaskConical, Zap,
   Upload, Send, Shield, X, Globe, Bot, Microscope, ScanLine,
   Wind, ArrowUpRight, CheckCircle2, Clock, Eye, Radar, RefreshCw, Sliders, Cpu, Layers,
-  Copy, Check, RotateCcw, Sparkles, Search, Compass, SlidersHorizontal, Anchor, Thermometer
+  Copy, Check, RotateCcw, Sparkles, Search, Compass, SlidersHorizontal, Anchor, Thermometer,
+  Droplets, AlertTriangle, Sun, ShieldAlert, Volume2
 } from 'lucide-react';
 import './App.css';
 
@@ -488,12 +489,15 @@ function useAnimatedCounter(target, duration = 1200) {
 export default function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [showGuideModal, setShowGuideModal] = useState(true);
   const [mapLayers, setMapLayers] = useState({
+    temperature: true,
     currents: true,
-    migration: false,
+    migration: true,
     biodiversity: true,
+    traffic: true,
     energy: true,
-    digitalTwin: false,
+    eez: true,
   });
   const [turbineCapacity, setTurbineCapacity] = useState(50);
   const [activeBot, setActiveBot] = useState('energy'); // 'energy' or 'bio'
@@ -511,6 +515,12 @@ export default function App() {
     const t = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
+
+  // Handle Tab Switch & trigger Official Guide popup
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setShowGuideModal(true);
+  };
 
   // Init Gemini from env key
   useEffect(() => {
@@ -603,11 +613,13 @@ export default function App() {
   // Landing page handlers
   const handleLandingEnter = () => {
     setShowLanding(false);
+    setShowGuideModal(true);
   };
 
   const handleLandingNavigate = (tabId) => {
     setActiveTab(tabId);
     setShowLanding(false);
+    setShowGuideModal(true);
   };
 
   // Show landing page
@@ -618,6 +630,14 @@ export default function App() {
   return (
     <>
       <div className="ocean-bg" />
+
+      {/* Official Page Guide Modal Popup for Govt Officials */}
+      {showGuideModal && (
+        <GovtOfficialGuideModal
+          tabId={activeTab}
+          onClose={() => setShowGuideModal(false)}
+        />
+      )}
 
       {/* ── Navbar ── */}
       <nav className="navbar" id="navbar">
@@ -635,15 +655,25 @@ export default function App() {
         </div>
       </nav>
 
-      {/* ── Tabs ── */}
+      {/* ── Tabs & Official Guide Trigger Button ── */}
       <div className="tab-nav" id="tab-nav">
-        {tabs.map(tab => (
-          <button key={tab.id} id={`tab-${tab.id}`}
-            className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}>
-            <tab.icon />{tab.label}
-          </button>
-        ))}
+        <div className="tab-buttons-group">
+          {tabs.map(tab => (
+            <button key={tab.id} id={`tab-${tab.id}`}
+              className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => handleTabChange(tab.id)}>
+              <tab.icon />{tab.label}
+            </button>
+          ))}
+        </div>
+
+        <button
+          className="govt-guide-trigger-btn"
+          onClick={() => setShowGuideModal(true)}
+          title="Open Official Module Briefing & Guidance"
+        >
+          <Anchor size={14} /> Official Page Briefing
+        </button>
       </div>
 
       {/* ── Content ── */}
@@ -814,51 +844,190 @@ function MapFlyTo({ center, flyCount }) {
   return null;
 }
 
+// ══════════════════════════════════════════════════════════════════════════════
+// GOVT OFFICIAL PAGE GUIDANCE MODAL
+// ══════════════════════════════════════════════════════════════════════════════
+
+const PAGE_BRIEFINGS = {
+  overview: {
+    title: 'Platform Overview & Live Ocean Ingestion',
+    target: 'Ministry of Earth Sciences (MoES) & Operational Command',
+    purpose: 'Provides executive-level situational awareness across India’s 2.37M km² Exclusive Economic Zone (EEZ).',
+    expectations: [
+      'Monitor 247 real-time buoy stations, CTD profilers, and ARGO float feeds.',
+      'Track automated AI Agent Activity Logs (Ingestion, Anomaly, QA, Correlation agents).',
+      'Inspect 24-hour sea surface temperature trends and salinity anomalies.',
+      'Evaluate overall platform uptime (99.8%) and cross-institutional synchronization.'
+    ],
+    action: 'Review live log alerts for thermal anomalies before issuing marine advisories.'
+  },
+  map: {
+    title: 'GIS Geospatial Ocean Intelligence Map',
+    target: 'Offshore Renewable Siting & Maritime Planning Committee',
+    purpose: 'Interactive geospatial analysis combining bathymetry, ocean current velocity, fish corridors, and renewable siting suitability.',
+    expectations: [
+      'Toggle 7 multi-spectral data layers (Sea Temp, Currents, Migration, Biodiversity, Traffic, Wave Energy, Bathymetry).',
+      'Click any coastal station pin to inspect real-time telemetry (SST, Tidal amplitude, Energy suitability score).',
+      'Analyze the West India Coastal Current (WICC) velocity vectors alongside candidate energy sites.',
+      'Identify 15 km protected wildlife exclusion zones around Schedule I species detections.'
+    ],
+    action: 'Use the Data Layers toggle panel to cross-reference Wave Energy potential with Biodiversity indices.'
+  },
+  otolith: {
+    title: 'Otolith Morphometry & AI Taxonomy Classifier',
+    target: 'Centre for Marine Living Resources (CMLRE) & Fisheries Authorities',
+    purpose: 'Automated AI classification of fish species and age cohort estimation via ear-stone shape analysis.',
+    expectations: [
+      'Upload specimen scans or select catalogued specimens (e.g. Sardinella longiceps).',
+      'Inspect computer-vision morphometric parameters (Major axis length, circularity, area, aspect ratio).',
+      'Review AI confidence scores (SAGAR-VISION v3.2 model) and secondary species matches.',
+      'Trace full taxonomic lineage from Kingdom down to species rank.'
+    ],
+    action: 'Verify otolith morphometric variance before confirming commercial stock quota limits.'
+  },
+  edna: {
+    title: 'eDNA Barcoding & Digital Twin Hydrodynamic Simulator',
+    target: 'National Biodiversity Authority & Environmental Assessment Board',
+    purpose: 'Molecular eDNA species barcoding coupled with 3D hydrodynamic digital twin impact simulation.',
+    expectations: [
+      'Compare target eDNA base-pair sequences against GenBank reference barcodes.',
+      'Simulate proposed tidal turbine capacity (10 MW – 200 MW) using the slider.',
+      'Evaluate simulated marine traffic disruption %, noise level (dB), and benthic footprint (ha).',
+      'Monitor differential-privacy federated learning aggregations across CMLRE, FSI, and ARI.'
+    ],
+    action: 'Adjust turbine capacity to ensure biodiversity impact score remains under acceptable 4.0/10 threshold.'
+  },
+  chat: {
+    title: 'Ask Sagar-Manthan Dual AI Decision Support',
+    target: 'Policy Officers, Researchers & Regional Directorate Staff',
+    purpose: 'Conversational natural-language interface trained on oceanographic datasets and federal policy directives.',
+    expectations: [
+      'Switch between Energy & Siting Advisor bot and Biodiversity Specialist bot.',
+      'Query real-time wave potential ratios, species migration shifts, or Schedule I alerts.',
+      'Leverage Gemini 1.5 Pro / Flash models for data synthesis and official report drafts.',
+      'Click prompt suggestion chips for quick policy comparisons (e.g. Site-7 vs Site-3).'
+    ],
+    action: 'Ask specific quantitative queries for immediate inclusion in Ministerial briefing notes.'
+  }
+};
+
+function GovtOfficialGuideModal({ tabId, onClose }) {
+  const briefing = PAGE_BRIEFINGS[tabId] || PAGE_BRIEFINGS.overview;
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="guide-modal-card" onClick={e => e.stopPropagation()}>
+        <div className="modal-gov-header">
+          <div className="gov-emblem">
+            <Anchor size={16} />
+          </div>
+          <div>
+            <div className="gov-agency">OFFICIAL BRIEFING & USER GUIDE</div>
+            <div className="gov-ministry">Ministry of Earth Sciences • Government of India</div>
+          </div>
+          <button className="modal-close-btn" onClick={onClose}><X size={16} /></button>
+        </div>
+
+        <div className="modal-body">
+          <h3 className="module-title">{briefing.title}</h3>
+          <div className="target-badge">
+            <strong>Target Audience:</strong> {briefing.target}
+          </div>
+
+          <div className="briefing-section">
+            <h4>🏛️ Primary Purpose</h4>
+            <p>{briefing.purpose}</p>
+          </div>
+
+          <div className="briefing-section">
+            <h4>🎯 What You Can Inspect & Perform On This Page</h4>
+            <ul>
+              {briefing.expectations.map((exp, i) => (
+                <li key={i}>{exp}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="action-callout">
+            <strong>💡 Recommended Directive:</strong> {briefing.action}
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button className="modal-action-btn" onClick={onClose}>
+            Understood • Proceed to Module
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 2. GIS MAP
+// ══════════════════════════════════════════════════════════════════════════════
+
 function GISMap({ layers, toggleLayer }) {
   const [selectedStation, setSelectedStation] = useState(mapMarkers[5]); // Default to Site-7 (Kerala Coast)
   const [flyCount, setFlyCount] = useState(0);
 
   const markerColor = (type) => {
-    if (type === 'energy') return '#0D9488';
-    if (type === 'biodiversity') return '#10B981';
-    return '#06B6D4';
+    if (type === 'energy') return '#F59E0B'; // Amber for Energy
+    if (type === 'biodiversity') return '#10B981'; // Emerald for Bio
+    return '#06B6D4'; // Cyan for Sensors
   };
 
   const layerConfig = [
-    { key: 'temperature', label: 'Sea Temperature' },
-    { key: 'currents', label: 'Ocean Currents' },
-    { key: 'migration', label: 'Fish Migration' },
-    { key: 'biodiversity', label: 'Biodiversity' },
-    { key: 'traffic', label: 'Marine Traffic' },
-    { key: 'energy', label: 'Wave Energy' },
-    { key: 'eez', label: 'Bathymetry' },
+    { key: 'temperature', label: 'Sea Temperature (SST)', icon: Thermometer, color: '#F59E0B', desc: 'Satellite SST thermal contours' },
+    { key: 'currents', label: 'Ocean Currents (WICC/EICC)', icon: Wind, color: '#06B6D4', desc: 'Velocity vector streamlines' },
+    { key: 'migration', label: 'Fish Migration Corridors', icon: Fish, color: '#10B981', desc: 'Sardinella seasonal routes' },
+    { key: 'biodiversity', label: 'Biodiversity Sanctuaries', icon: Eye, color: '#2DD4BF', desc: 'Protected marine exclusion zones' },
+    { key: 'traffic', label: 'Marine Traffic & Shipping', icon: Anchor, color: '#6366F1', desc: 'Commercial vessel transits' },
+    { key: 'energy', label: 'Wave Energy Siting', icon: Zap, color: '#F59E0B', desc: 'Offshore turbine candidate sites' },
+    { key: 'eez', label: 'Bathymetry & 200 NM EEZ', icon: Compass, color: '#0D9488', desc: 'Maritime boundary limits' },
+    { key: 'chlorophyll', label: 'Chlorophyll-a & Plankton', icon: FlaskConical, color: '#84CC16', desc: 'Potential Fishing Zones (PFZ)' },
+    { key: 'salinity', label: 'Salinity & River Plumes', icon: Droplets, color: '#3B82F6', desc: 'Ganga & Godavari plume runoff' },
+    { key: 'cyclone', label: 'Cyclone Alert Warning', icon: AlertTriangle, color: '#EF4444', desc: 'INCOIS storm surge tracks' },
+    { key: 'coral', label: 'Coral Thermal Stress', icon: Sun, color: '#EC4899', desc: 'Degree Heating Weeks (DHW)' },
+    { key: 'acoustic', label: 'Subsurface Hydrophone Grid', icon: Radio, color: '#8B5CF6', desc: 'Acoustic listening nodes' },
   ];
 
   return (
     <div className="tab-content" id="gis-map-section">
       <div className="map-section-header">
         <h2>EXPLORE INDIA'S OCEAN</h2>
-        <p>Interactive Ocean Intelligence Map</p>
+        <p>Interactive Ocean Intelligence Map • Real-time Hydrodynamic Data & EEZ Monitoring</p>
       </div>
 
       <div className="gis-map-container">
         {/* Left Side Data Layers Toggle Panel */}
         <div className="map-side-panel left-panel">
-          <div className="panel-title">DATA LAYERS</div>
+          <div className="panel-title">DATA LAYERS ({layerConfig.length})</div>
           <div className="layer-toggle-list">
-            {layerConfig.map(l => (
-              <div key={l.key} className="layer-toggle-row">
-                <span className="layer-label">{l.label}</span>
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={layers[l.key] ?? true}
-                    onChange={() => toggleLayer(l.key)}
-                  />
-                  <span className="slider round"></span>
-                </label>
-              </div>
-            ))}
+            {layerConfig.map(l => {
+              const LIcon = l.icon;
+              const isChecked = layers[l.key] ?? true;
+              return (
+                <div key={l.key} className="layer-toggle-row">
+                  <div className="layer-info-group">
+                    <LIcon size={14} style={{ color: l.color, marginTop: '2px', flexShrink: 0 }} />
+                    <div>
+                      <span className="layer-label">{l.label}</span>
+                      <span className="layer-desc">{l.desc}</span>
+                    </div>
+                  </div>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => toggleLayer(l.key)}
+                    />
+                    <span className="slider round"></span>
+                  </label>
+                </div>
+              );
+            })}
           </div>
 
           <button
@@ -868,25 +1037,26 @@ function GISMap({ layers, toggleLayer }) {
               setFlyCount(c => c + 1);
             }}
           >
-            RESET VIEW
+            RESET VIEW & FILTERS
           </button>
         </div>
 
         {/* Center Map View */}
         <div className="map-view-center">
           <MapContainer
-            center={[14.5, 76.5]}
-            zoom={5.2}
-            minZoom={4.5}
+            center={[15.5, 77.5]}
+            zoom={4.8}
+            minZoom={4.2}
             maxZoom={12}
             maxBounds={[[0, 45], [32, 105]]}
             maxBoundsViscosity={0.8}
-            style={{ height: '560px', width: '100%', borderRadius: '14px' }}
+            style={{ height: '540px', width: '100%', borderRadius: '14px' }}
             zoomControl={true}
             attributionControl={false}
             id="leaflet-map"
           >
             <MapInit />
+            {/* CARTO Light Voyager Basemap for clean light theme GIS mapping */}
             <TileLayer
               url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
               subdomains="abcd" maxZoom={19}
@@ -905,15 +1075,53 @@ function GISMap({ layers, toggleLayer }) {
             {/* Ocean Currents */}
             {(layers.currents ?? true) && (
               <LayerGroup>
-                <Polyline positions={oceanCurrents.wicc} pathOptions={{ color: '#06B6D4', weight: 2.5, opacity: 0.6, dashArray: '8 6' }} />
-                <Polyline positions={oceanCurrents.eicc} pathOptions={{ color: '#06B6D4', weight: 2, opacity: 0.5, dashArray: '8 6' }} />
+                <Polyline positions={oceanCurrents.wicc} pathOptions={{ color: '#06B6D4', weight: 2.5, opacity: 0.7, dashArray: '8 6' }} />
+                <Polyline positions={oceanCurrents.eicc} pathOptions={{ color: '#06B6D4', weight: 2, opacity: 0.6, dashArray: '8 6' }} />
               </LayerGroup>
             )}
 
             {/* Migration Paths */}
-            {layers.migration && (
+            {(layers.migration ?? true) && (
               <LayerGroup>
-                <Polyline positions={migrationPaths.sardine} pathOptions={{ color: '#10B981', weight: 2.5, opacity: 0.6, dashArray: '4 8' }} />
+                <Polyline positions={migrationPaths.sardine} pathOptions={{ color: '#10B981', weight: 2.5, opacity: 0.7, dashArray: '4 8' }} />
+              </LayerGroup>
+            )}
+
+            {/* Chlorophyll-a / PFZ Corridors */}
+            {layers.chlorophyll && (
+              <LayerGroup>
+                <Polyline positions={[[12.0, 74.0], [14.0, 73.0], [16.5, 72.0]]} pathOptions={{ color: '#84CC16', weight: 3, opacity: 0.7, dashArray: '6 6' }} />
+              </LayerGroup>
+            )}
+
+            {/* Salinity / River Plumes */}
+            {layers.salinity && (
+              <LayerGroup>
+                <Circle center={[16.5, 82.5]} radius={60000} pathOptions={{ color: '#3B82F6', fillColor: '#3B82F6', fillOpacity: 0.15, weight: 1 }} />
+              </LayerGroup>
+            )}
+
+            {/* Cyclone Alert Track */}
+            {layers.cyclone && (
+              <LayerGroup>
+                <Polyline positions={[[11.0, 88.0], [14.0, 85.0], [17.5, 83.0]]} pathOptions={{ color: '#EF4444', weight: 3, opacity: 0.8, dashArray: '4 4' }} />
+              </LayerGroup>
+            )}
+
+            {/* Coral Bleaching Stress */}
+            {layers.coral && (
+              <LayerGroup>
+                <Circle center={[9.0, 78.8]} radius={45000} pathOptions={{ color: '#EC4899', fillColor: '#EC4899', fillOpacity: 0.2, weight: 1.5 }} />
+              </LayerGroup>
+            )}
+
+            {/* Biodiversity Hotspots */}
+            {(layers.biodiversity ?? true) && (
+              <LayerGroup>
+                {biodiversityZones.map((zone, i) => (
+                  <Circle key={i} center={zone.center} radius={zone.radius}
+                    pathOptions={{ color: '#10B981', fillColor: '#10B981', fillOpacity: 0.12, weight: 1.5, opacity: 0.4 }} />
+                ))}
               </LayerGroup>
             )}
 
@@ -946,6 +1154,37 @@ function GISMap({ layers, toggleLayer }) {
               </CircleMarker>
             ))}
           </MapContainer>
+
+          {/* Interactive Map Color Legend Explanation Box */}
+          <div className="map-color-explanation">
+            <div className="exp-title">EXPLANATION OF MAP COLOR CODES & MARKERS</div>
+            <div className="exp-grid">
+              <div className="exp-item">
+                <span className="exp-dot amber"></span>
+                <span><strong>Amber Marker:</strong> High Wave/Tidal Energy Site (&gt;8.0 Suitability)</span>
+              </div>
+              <div className="exp-item">
+                <span className="exp-dot green"></span>
+                <span><strong>Emerald Zone:</strong> Marine Biodiversity & Protected Hotspot Area</span>
+              </div>
+              <div className="exp-item">
+                <span className="exp-dot cyan"></span>
+                <span><strong>Bright Cyan Point:</strong> Real-time CTD Sensor / ARGO Buoy Station</span>
+              </div>
+              <div className="exp-item">
+                <span className="exp-line cyan"></span>
+                <span><strong>Cyan Streamlines:</strong> WICC / EICC Velocity Current Flow Vectors</span>
+              </div>
+              <div className="exp-item">
+                <span className="exp-line green"></span>
+                <span><strong>Lime Dashlines:</strong> Sardinella Migration & Potential Fishing Zone</span>
+              </div>
+              <div className="exp-item">
+                <span className="exp-line red"></span>
+                <span><strong>Red Dashlines:</strong> Cyclone Storm Surge Early Warning Track</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Right Side Station Details Card Panel */}
@@ -956,9 +1195,12 @@ function GISMap({ layers, toggleLayer }) {
           </div>
 
           <div className="detail-media-box">
-            <div className="detail-image-placeholder">
-              <span className="sea-badge">COASTAL VIEW</span>
-            </div>
+            <img
+              src="/images/kerala-coastal.png"
+              alt="Kerala Coastline & Lighthouse"
+              className="coastal-view-img"
+            />
+            <span className="sea-badge">COASTAL VIEW</span>
           </div>
 
           <div className="detail-stats-list">
