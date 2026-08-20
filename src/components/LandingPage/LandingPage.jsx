@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
   Waves, Activity, Globe, Microscope, Dna, MessageCircle,
   BarChart3, ArrowRight, Shield, Radio, Cpu, Satellite,
-  ChevronRight, Clock, Anchor, Radar, Fish, Thermometer, Wind, Zap, ShieldCheck
+  ChevronRight, Clock, Anchor, Radar, Fish, Thermometer, Wind, Zap, ShieldCheck, Bot, Sparkles
 } from 'lucide-react';
 import './LandingPage.css';
 
@@ -635,18 +635,23 @@ export default function LandingPage({ onEnter, onNavigate }) {
         </div>
       </div>
 
-      {/* ── IRCTC AskDISHA Style Floating AI Assistant Badge ── */}
+      {/* ── IRCTC AskDISHA 2.0 Style Floating AI Assistant Badge ── */}
       <button
         className="irctc-ask-disha-floating-badge"
-        onClick={() => handleNavClick('chat')}
-        title="Open Ask Sagar-Manthan AI Assistant"
+        onClick={() => openInNewTab('chat')}
+        title="Open Ask Sagar-Manthan AI Assistant 2.0"
       >
-        <div className="disha-icon-circle">
-          <MessageCircle size={20} />
+        <div className="disha-icon-wrapper">
+          <div className="disha-icon-circle">
+            <Bot size={22} />
+          </div>
+          <span className="disha-status-dot" />
         </div>
         <div className="disha-text-group">
           <span className="disha-title">Ask Sagar-Manthan</span>
-          <span className="disha-subtitle">AI Assistant 2.0</span>
+          <span className="disha-subtitle">
+            <Sparkles size={11} className="sparkle-icon" /> AI Assistant 2.0
+          </span>
         </div>
       </button>
     </div>
