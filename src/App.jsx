@@ -13,7 +13,7 @@ import {
   Upload, Send, Shield, X, Globe, Bot, Microscope, ScanLine,
   Wind, ArrowUpRight, CheckCircle2, Clock, Eye, Radar, RefreshCw, Sliders, Cpu, Layers,
   Copy, Check, RotateCcw, Sparkles, Search, Compass, SlidersHorizontal, Anchor, Thermometer,
-  Droplets, AlertTriangle, Sun, ShieldAlert, Volume2
+  Droplets, AlertTriangle, Sun, ShieldAlert, Volume2, Play, Pause, VolumeX, ShieldCheck, ZapOff
 } from 'lucide-react';
 import './App.css';
 
@@ -483,21 +483,438 @@ function useAnimatedCounter(target, duration = 1200) {
 
 
 // ══════════════════════════════════════════════════════════════════════════════
+// IRCTC-INSPIRED VISUAL QUICK SERVICE DECK
+// ══════════════════════════════════════════════════════════════════════════════
+
+function VisualQuickDeck({ onSelectService, activeTab }) {
+  const services = [
+    { id: 'map', label: 'GIS MAP', icon: Globe, color: '#0D9488', desc: '12-Layer Map' },
+    { id: 'sst', label: 'SEA TEMP', icon: Thermometer, color: '#F59E0B', desc: 'SST Satellite' },
+    { id: 'currents', label: 'CURRENTS', icon: Wind, color: '#06B6D4', desc: 'WICC Vector' },
+    { id: 'migration', label: 'FISH ROUTES', icon: Fish, color: '#10B981', desc: 'Sardine Path' },
+    { id: 'otolith', label: 'OTOLITH SCAN', icon: Microscope, color: '#8B5CF6', desc: 'Taxonomy AI' },
+    { id: 'edna', label: 'eDNA RADAR', icon: Dna, color: '#3B82F6', desc: 'GenBank Match' },
+    { id: 'energy', label: 'WAVE ENERGY', icon: Zap, color: '#EC4899', desc: 'Digital Twin' },
+    { id: 'sonar', label: '3D SONAR', icon: Radar, color: '#06B6D4', desc: 'Acoustic HUD' },
+    { id: 'shield', label: 'EXCLUSION', icon: ShieldCheck, color: '#10B981', desc: 'Wildlife Shield' },
+    { id: 'chat', label: 'AI ASSISTANT', icon: MessageCircle, color: '#6366F1', desc: 'Decision Bot' },
+  ];
+
+  return (
+    <div className="govt-radar-section">
+      <div className="govt-radar-header">
+        <h3 className="govt-radar-title">MINISTERIAL DECISION & INTELLIGENCE RADAR</h3>
+        <p className="govt-radar-subtitle">Direct 1-Click Operational Access for Government Decision-Makers</p>
+      </div>
+      <div className="govt-radar-grid">
+        {services.map((s) => {
+          const SIcon = s.icon;
+          const isActive = (activeTab === s.id) || (s.id === 'sonar' && activeTab === 'spatial-sonar');
+          return (
+            <button
+              key={s.id}
+              className={`govt-radar-item ${isActive ? 'active' : ''}`}
+              onClick={() => onSelectService(s.id)}
+              title={`Open ${s.label}`}
+            >
+              <div className="govt-radar-circle" style={{ '--radar-color': s.color }}>
+                <SIcon size={24} />
+              </div>
+              <span className="govt-radar-label">{s.label}</span>
+              <span className="govt-radar-desc">{s.desc}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 3D HOLOGRAPHIC AI SPATIAL SONAR MATRIX MODULE
+// ══════════════════════════════════════════════════════════════════════════════
+
+function SpatialSonarModule() {
+  const [selectedBlip, setSelectedBlip] = useState(0);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(true);
+  const [shieldActive, setShieldActive] = useState(true);
+  const [dampeningActive, setDampeningActive] = useState(false);
+  const [actionNotice, setActionNotice] = useState(null);
+
+  const sonarBlips = [
+    {
+      id: 0,
+      name: 'Rhincodon typus (Whale Shark)',
+      category: 'SCHEDULE I PROTECTED SPECIES',
+      coords: '8.08° N, 77.52° E (Kanyakumari)',
+      depth: '18m Depth',
+      freq: '1.2 kHz - Hydroacoustic Pulse',
+      confidence: '99.4%',
+      status: 'Protected Exclusion Active',
+      color: '#06B6D4',
+      badge: 'CYAN PULSE',
+      top: '62%',
+      left: '46%',
+      decibel: '42 dB',
+      recommendation: 'Maintain 15 km vessel exclusion buffer around species position.'
+    },
+    {
+      id: 1,
+      name: 'Tidal Turbine Array (Site-7)',
+      category: 'RENEWABLE ENERGY KINETIC NOISE',
+      coords: '9.50° N, 75.50° E (Kerala Coast)',
+      depth: '35m Seabed',
+      freq: '140 Hz - Low Frequency Rotor Cavitation',
+      confidence: '96.8%',
+      status: dampeningActive ? 'Noise Dampened (62 dB)' : 'Active Rotor Noise (88 dB)',
+      color: dampeningActive ? '#10B981' : '#F59E0B',
+      badge: 'AMBER ROTOR',
+      top: '52%',
+      left: '41%',
+      decibel: dampeningActive ? '62 dB' : '88 dB',
+      recommendation: dampeningActive ? 'Benthic acoustic noise dampening is ACTIVE.' : 'Engage acoustic noise dampener to prevent fish corridor interference.'
+    },
+    {
+      id: 2,
+      name: 'INCOIS Hydrophone Node-4',
+      category: 'UNDERSEA ACOUSTIC RECEIVER GRID',
+      coords: '10.50° N, 72.30° E (Lakshadweep)',
+      depth: '120m Deep Channel',
+      freq: '8.4 kHz - Encrypted Telemetry Ping',
+      confidence: '100%',
+      status: 'Live Data Link Active',
+      color: '#10B981',
+      badge: 'TEAL NODE',
+      top: '48%',
+      left: '32%',
+      decibel: '34 dB',
+      recommendation: 'Acoustic array operational. Transmitting raw hydrophone telemetry to INCOIS.'
+    },
+    {
+      id: 3,
+      name: 'Commercial Cargo Vessel Transit',
+      category: 'MARITIME SHIPPING CORRIDOR',
+      coords: '15.20° N, 73.50° E (Goa Offshore)',
+      depth: 'Surface Transit',
+      freq: '320 Hz - Twin Propeller Pitch',
+      confidence: '94.2%',
+      status: 'Passing Marine Corridor',
+      color: '#8B5CF6',
+      badge: 'INDIGO VESSEL',
+      top: '36%',
+      left: '36%',
+      decibel: '76 dB',
+      recommendation: 'Shipping vessel within normal commercial lane. No environmental collision warning.'
+    },
+    {
+      id: 4,
+      name: 'Subsurface Thermal Upwelling Plume',
+      category: 'HYDROCARBON & SST DYNAMIC PLUME',
+      coords: '22.50° N, 69.50° E (Gulf of Kutch)',
+      depth: '50m Subsurface',
+      freq: '45 Hz - Micro-Seismic Resonance',
+      confidence: '91.5%',
+      status: 'Thermal Anomaly Logged',
+      color: '#EF4444',
+      badge: 'ROSE ANOMALY',
+      top: '18%',
+      left: '26%',
+      decibel: '52 dB',
+      recommendation: 'SST anomaly flagged. Automated Buoy sweep initiated.'
+    }
+  ];
+
+  const current = sonarBlips[selectedBlip];
+
+  const triggerAction = (type) => {
+    if (type === 'shield') {
+      setShieldActive(!shieldActive);
+      setActionNotice(shieldActive ? '15km Wildlife Shield Deactivated' : '15km Wildlife Protection Shield ENFORCED around Schedule I Species!');
+    } else if (type === 'dampen') {
+      setDampeningActive(!dampeningActive);
+      setActionNotice(dampeningActive ? 'Turbine Noise Dampening Disabled' : 'Turbine Acoustic Dampening ENGAGED! Reduced noise to 62 dB.');
+    } else if (type === 'buoy') {
+      setActionNotice('ARGO Buoy Hydro-Acoustic Ping Broadcasted across all 247 Stations!');
+    } else if (type === 'emergency') {
+      setActionNotice('INCOIS Coastal Emergency Strobe Alert Broadcasted!');
+    }
+    setTimeout(() => setActionNotice(null), 4500);
+  };
+
+  return (
+    <div className="tab-content" id="spatial-sonar-module">
+      <div className="section-header">
+        <h2>3D HOLOGRAPHIC AI SPATIAL SONAR MATRIX</h2>
+        <p>Real-Time Underwater Hydroacoustic Radar • Species Protection & Marine Noise Optimization</p>
+      </div>
+
+      {actionNotice && (
+        <div className="sonar-action-banner">
+          <CheckCircle2 size={16} /> {actionNotice}
+        </div>
+      )}
+
+      <div className="sonar-main-grid">
+        {/* Left Column: 3D Holographic Sonar Display HUD */}
+        <div className="sonar-hud-card">
+          <div className="sonar-hud-header">
+            <div className="hud-title-group">
+              <Radar size={18} className="sonar-spin-icon" />
+              <span>3D SPATIAL SONAR HUD</span>
+            </div>
+            <div className="hud-badge-live">
+              <span className="live-pulsing-dot"></span>
+              200 NM EEZ SONAR SWEEP
+            </div>
+          </div>
+
+          <div className="sonar-display-viewport">
+            <svg viewBox="0 0 500 500" className="sonar-svg-canvas">
+              <defs>
+                <radialGradient id="sonarGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.25" />
+                  <stop offset="70%" stopColor="#0D9488" stopOpacity="0.08" />
+                  <stop offset="100%" stopColor="#061424" stopOpacity="0.95" />
+                </radialGradient>
+                <linearGradient id="beamGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.75" />
+                  <stop offset="60%" stopColor="#0D9488" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#06B6D4" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+
+              {/* Background Glow */}
+              <circle cx="250" cy="250" r="230" fill="url(#sonarGlow)" stroke="rgba(13,148,136,0.3)" strokeWidth="1.5" />
+
+              {/* Concentric Radar Range Rings */}
+              {[40, 90, 140, 190, 230].map((r, i) => (
+                <circle key={i} cx="250" cy="250" r={r} fill="none" stroke="rgba(34,211,238,0.2)" strokeWidth="1" strokeDasharray={i % 2 === 1 ? "4 4" : "none"} />
+              ))}
+
+              {/* Range Ring Labels */}
+              <text x="254" y="206" fill="rgba(34,211,238,0.5)" fontSize="9" fontFamily="JetBrains Mono">50 NM</text>
+              <text x="254" y="156" fill="rgba(34,211,238,0.5)" fontSize="9" fontFamily="JetBrains Mono">100 NM</text>
+              <text x="254" y="106" fill="rgba(34,211,238,0.5)" fontSize="9" fontFamily="JetBrains Mono">150 NM</text>
+              <text x="254" y="56" fill="rgba(34,211,238,0.7)" fontSize="9" fontFamily="JetBrains Mono" fontWeight="700">200 NM EEZ</text>
+
+              {/* Crosshair Cardinal Lines */}
+              <line x1="250" y1="20" x2="250" y2="480" stroke="rgba(34,211,238,0.25)" strokeWidth="1" />
+              <line x1="20" y1="250" x2="480" y2="250" stroke="rgba(34,211,238,0.25)" strokeWidth="1" />
+
+              {/* Cardinal Markers */}
+              <text x="250" y="15" fill="#22D3EE" fontSize="11" textAnchor="middle" fontWeight="800">N</text>
+              <text x="488" y="254" fill="#22D3EE" fontSize="11" textAnchor="middle" fontWeight="800">E</text>
+              <text x="250" y="495" fill="#22D3EE" fontSize="11" textAnchor="middle" fontWeight="800">S</text>
+              <text x="12" y="254" fill="#22D3EE" fontSize="11" textAnchor="middle" fontWeight="800">W</text>
+
+              {/* Rotating Radar Sweep Cone */}
+              <g className="sonar-sweep-group">
+                <path d="M 250 250 L 480 250 A 230 230 0 0 0 250 20 Z" fill="url(#beamGrad)" />
+                <line x1="250" y1="250" x2="480" y2="250" stroke="#22D3EE" strokeWidth="2.5" />
+              </g>
+
+              {/* Protected 15km Exclusion Bubble around Whale Shark (if active) */}
+              {shieldActive && (
+                <g>
+                  <circle cx="230" cy="310" r="38" fill="rgba(6,182,212,0.15)" stroke="#06B6D4" strokeWidth="1.5" strokeDasharray="5 3" />
+                  <text x="230" y="358" fill="#06B6D4" fontSize="8" textAnchor="middle" fontFamily="JetBrains Mono" fontWeight="700">15KM SHIELD BUBBLE</text>
+                </g>
+              )}
+
+              {/* Sonar Blip Entities */}
+              {sonarBlips.map((blip) => {
+                const isSelected = selectedBlip === blip.id;
+                const px = (parseFloat(blip.left) / 100) * 500;
+                const py = (parseFloat(blip.top) / 100) * 500;
+                return (
+                  <g key={blip.id} onClick={() => setSelectedBlip(blip.id)} style={{ cursor: 'pointer' }}>
+                    {isSelected && (
+                      <circle cx={px} cy={py} r="16" fill="none" stroke={blip.color} strokeWidth="1.5" className="blip-select-pulse" />
+                    )}
+                    <circle cx={px} cy={py} r={isSelected ? "7" : "5"} fill={blip.color} stroke="#FFFFFF" strokeWidth="1.5" />
+                    <text x={px + 10} y={py + 3} fill={isSelected ? "#FFFFFF" : "rgba(255,255,255,0.7)"} fontSize="9" fontFamily="Inter" fontWeight={isSelected ? "800" : "600"}>
+                      {blip.name.split(' ')[0]}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+
+          {/* Bottom Controls Bar */}
+          <div className="sonar-hud-controls">
+            <div className="hud-metric">
+              <span className="m-label">SWEEP FREQUENCY</span>
+              <span className="m-val font-mono">12.4 kHz</span>
+            </div>
+            <div className="hud-metric">
+              <span className="m-label">ACOUSTIC CLARITY</span>
+              <span className="m-val font-mono" style={{ color: '#4ADE80' }}>98.7%</span>
+            </div>
+            <div className="hud-metric">
+              <span className="m-label">NOISE LEVEL</span>
+              <span className="m-val font-mono" style={{ color: dampeningActive ? '#4ADE80' : '#F59E0B' }}>{current.decibel}</span>
+            </div>
+            <div className="hud-metric">
+              <span className="m-label">ENTITIES DETECTED</span>
+              <span className="m-val font-mono">5 ACTIVE</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Entity Telemetry + Audio Waveform + Visual Actions */}
+        <div className="sonar-side-column">
+          {/* Entity Telemetry Card */}
+          <div className="sonar-card telemetry-card">
+            <div className="sonar-card-header">
+              <span className="card-title-text">SONAR ENTITY TELEMETRY</span>
+              <span className="blip-badge" style={{ backgroundColor: current.color }}>{current.badge}</span>
+            </div>
+
+            <h3 className="entity-name">{current.name}</h3>
+            <p className="entity-category">{current.category}</p>
+
+            <div className="telemetry-stats-grid">
+              <div className="t-stat">
+                <span className="t-label">COORDINATES</span>
+                <span className="t-val font-mono">{current.coords}</span>
+              </div>
+              <div className="t-stat">
+                <span className="t-label">DEPTH LAYER</span>
+                <span className="t-val font-mono">{current.depth}</span>
+              </div>
+              <div className="t-stat">
+                <span className="t-label">FREQUENCY</span>
+                <span className="t-val font-mono">{current.freq}</span>
+              </div>
+              <div className="t-stat">
+                <span className="t-label">CONFIDENCE</span>
+                <span className="t-val font-mono" style={{ color: '#06B6D4' }}>{current.confidence}</span>
+              </div>
+            </div>
+
+            <div className="recommendation-callout">
+              <strong>💡 AI Directive:</strong> {current.recommendation}
+            </div>
+          </div>
+
+          {/* Sound Waveform Oscilloscope Card */}
+          <div className="sonar-card oscilloscope-card">
+            <div className="sonar-card-header">
+              <span className="card-title-text">HYDROACOUSTIC FREQUENCY OSCILLOSCOPE</span>
+              <button className="audio-toggle-btn" onClick={() => setIsPlayingAudio(!isPlayingAudio)}>
+                {isPlayingAudio ? <Volume2 size={14} style={{ color: '#22D3EE' }} /> : <VolumeX size={14} />}
+                <span>{isPlayingAudio ? 'Audio Live' : 'Muted'}</span>
+              </button>
+            </div>
+
+            <div className="oscilloscope-waveform-box">
+              <div className="oscilloscope-bars">
+                {[45, 75, 30, 90, 60, 100, 80, 40, 95, 65, 85, 35, 70, 90, 50, 80, 60, 40, 90, 70, 55, 85].map((h, i) => (
+                  <div
+                    key={i}
+                    className={`wave-bar ${isPlayingAudio ? 'animating' : ''}`}
+                    style={{
+                      height: isPlayingAudio ? `${h}%` : '20%',
+                      animationDelay: `${i * 0.08}s`
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="oscilloscope-scale">
+                <span>20 Hz</span>
+                <span>100 Hz</span>
+                <span>1 kHz</span>
+                <span>10 kHz</span>
+                <span>20 kHz</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Visual Instant Action Deck */}
+          <div className="sonar-card action-deck-card">
+            <div className="sonar-card-header">
+              <span className="card-title-text">VISUAL INSTANT ACTION DECK</span>
+            </div>
+
+            <div className="action-deck-buttons">
+              <button
+                className={`instant-action-btn ${shieldActive ? 'active-emerald' : ''}`}
+                onClick={() => triggerAction('shield')}
+              >
+                <ShieldCheck size={18} />
+                <div>
+                  <div className="act-title">15KM WILDLIFE SHIELD</div>
+                  <div className="act-desc">{shieldActive ? 'SHIELD ENFORCED' : 'CLICK TO ENFORCE'}</div>
+                </div>
+              </button>
+
+              <button
+                className={`instant-action-btn ${dampeningActive ? 'active-amber' : ''}`}
+                onClick={() => triggerAction('dampen')}
+              >
+                <Volume2 size={18} />
+                <div>
+                  <div className="act-title">TURBINE NOISE DAMPENING</div>
+                  <div className="act-desc">{dampeningActive ? 'DAMPENED (62 dB)' : 'CLICK TO DAMPEN (88 dB)'}</div>
+                </div>
+              </button>
+
+              <button
+                className="instant-action-btn"
+                onClick={() => triggerAction('buoy')}
+              >
+                <Radio size={18} />
+                <div>
+                  <div className="act-title">TRIGGER BUOY SWEEP</div>
+                  <div className="act-desc">PING 247 BUOY NODES</div>
+                </div>
+              </button>
+
+              <button
+                className="instant-action-btn emergency"
+                onClick={() => triggerAction('emergency')}
+              >
+                <AlertTriangle size={18} />
+                <div>
+                  <div className="act-title">COASTAL EMERGENCY ALERT</div>
+                  <div className="act-desc">BROADCAST INCOIS STROBE</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 // MAIN APP
 // ══════════════════════════════════════════════════════════════════════════════
 
 export default function App() {
-  const [showLanding, setShowLanding] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
-  const [showGuideModal, setShowGuideModal] = useState(true);
-  const [mapLayers, setMapLayers] = useState({
-    temperature: true,
-    currents: true,
-    migration: true,
-    biodiversity: true,
-    traffic: true,
-    energy: true,
-    eez: true,
+  const [showLanding, setShowLanding] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return !params.has('tab');
+  });
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('tab') || 'overview';
+  });
+  const [showGuideModal, setShowGuideModal] = useState(false);
+  const [mapLayers, setMapLayers] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const layer = params.get('layer');
+    return {
+      temperature: layer ? layer === 'temperature' : true,
+      currents: layer ? layer === 'currents' : true,
+      migration: layer ? layer === 'migration' : true,
+      biodiversity: layer ? layer === 'biodiversity' : true,
+      traffic: true,
+      energy: true,
+      eez: true,
+    };
   });
   const [turbineCapacity, setTurbineCapacity] = useState(50);
   const [activeBot, setActiveBot] = useState('energy'); // 'energy' or 'bio'
@@ -516,10 +933,27 @@ export default function App() {
     return () => clearInterval(t);
   }, []);
 
-  // Handle Tab Switch & trigger Official Guide popup
+  // Handle Tab Switch (No Guide Modal popup)
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
-    setShowGuideModal(true);
+  };
+
+  const handleQuickServiceSelect = (serviceId) => {
+    if (serviceId === 'map' || serviceId === 'sst' || serviceId === 'currents' || serviceId === 'migration' || serviceId === 'shield') {
+      setActiveTab('map');
+      if (serviceId === 'sst') setMapLayers(prev => ({ ...prev, temperature: true }));
+      if (serviceId === 'currents') setMapLayers(prev => ({ ...prev, currents: true }));
+      if (serviceId === 'migration') setMapLayers(prev => ({ ...prev, migration: true }));
+      if (serviceId === 'shield') setMapLayers(prev => ({ ...prev, biodiversity: true }));
+    } else if (serviceId === 'otolith') {
+      setActiveTab('otolith');
+    } else if (serviceId === 'edna' || serviceId === 'energy') {
+      setActiveTab('edna');
+    } else if (serviceId === 'sonar') {
+      setActiveTab('spatial-sonar');
+    } else if (serviceId === 'chat') {
+      setActiveTab('chat');
+    }
   };
 
   // Init Gemini from env key
@@ -603,6 +1037,7 @@ export default function App() {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Activity },
     { id: 'map', label: 'GIS Map', icon: Globe },
+    { id: 'spatial-sonar', label: '3D Sonar Matrix', icon: Radar },
     { id: 'otolith', label: 'Otolith & Taxonomy', icon: Microscope },
     { id: 'edna', label: 'eDNA & Digital Twin', icon: Dna },
     { id: 'chat', label: 'Ask Sagar-Manthan', icon: MessageCircle },
@@ -613,13 +1048,11 @@ export default function App() {
   // Landing page handlers
   const handleLandingEnter = () => {
     setShowLanding(false);
-    setShowGuideModal(true);
   };
 
   const handleLandingNavigate = (tabId) => {
     setActiveTab(tabId);
     setShowLanding(false);
-    setShowGuideModal(true);
   };
 
   // Show landing page
@@ -630,14 +1063,6 @@ export default function App() {
   return (
     <>
       <div className="ocean-bg" />
-
-      {/* Official Page Guide Modal Popup for Govt Officials */}
-      {showGuideModal && (
-        <GovtOfficialGuideModal
-          tabId={activeTab}
-          onClose={() => setShowGuideModal(false)}
-        />
-      )}
 
       {/* ── Navbar ── */}
       <nav className="navbar" id="navbar">
@@ -655,7 +1080,7 @@ export default function App() {
         </div>
       </nav>
 
-      {/* ── Tabs & Official Guide Trigger Button ── */}
+      {/* ── Tabs Navigation ── */}
       <div className="tab-nav" id="tab-nav">
         <div className="tab-buttons-group">
           {tabs.map(tab => (
@@ -666,20 +1091,13 @@ export default function App() {
             </button>
           ))}
         </div>
-
-        <button
-          className="govt-guide-trigger-btn"
-          onClick={() => setShowGuideModal(true)}
-          title="Open Official Module Briefing & Guidance"
-        >
-          <Anchor size={14} /> Official Page Briefing
-        </button>
       </div>
 
       {/* ── Content ── */}
       <main className="main-content" key={activeTab}>
         {activeTab === 'overview' && <OverviewDashboard logEntries={logEntries} />}
-        {activeTab === 'map' && <GISMap layers={mapLayers} toggleLayer={toggleLayer} />}
+        {activeTab === 'map' && <GISMap layers={mapLayers} toggleLayer={toggleLayer} onNavigate={handleTabChange} />}
+        {activeTab === 'spatial-sonar' && <SpatialSonarModule />}
         {activeTab === 'otolith' && <OtolithModule />}
         {activeTab === 'edna' && <EDNAModule tc={turbineCapacity} setTc={setTurbineCapacity} td={trafficDisruption} bi={biodiversityImpact} ae={annualEnergy} />}
         {activeTab === 'chat' && (
@@ -1233,7 +1651,7 @@ function GISMap({ layers, toggleLayer }) {
             </div>
           </div>
 
-          <button className="view-analytics-btn">
+          <button className="view-analytics-btn" onClick={() => onNavigate && onNavigate('edna')}>
             VIEW DETAILED ANALYTICS
           </button>
         </div>

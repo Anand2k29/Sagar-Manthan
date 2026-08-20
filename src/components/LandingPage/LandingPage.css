@@ -70,31 +70,32 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
-  height: 64px;
-  background: var(--lp-bg-primary);
+  height: 68px;
+  background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid var(--lp-border-light);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   backdrop-filter: blur(16px);
-  background: rgba(255, 255, 255, 0.92);
 }
 
 .lp-navbar-brand {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .lp-navbar-logo {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 8px;
   background: var(--lp-bg-hero);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--lp-accent-teal-light);
+  flex-shrink: 0;
 }
 
 .lp-navbar-logo svg {
@@ -102,22 +103,31 @@
   height: 20px;
 }
 
+.lp-navbar-brand-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .lp-navbar-brand-text h1 {
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 1px;
   color: var(--lp-text-primary);
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.15;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .lp-navbar-brand-text span {
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 1.2px;
-  color: var(--lp-text-muted);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--lp-accent-teal);
   text-transform: uppercase;
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 .lp-navbar-links {
@@ -592,26 +602,41 @@
   transform: scaleX(1);
 }
 
-.lp-capability-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--lp-radius-md);
+.cap-card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.irctc-cap-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid var(--cap-color, #0D9488);
+  color: var(--cap-color, #0D9488);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--lp-accent-teal-bg);
-  color: var(--lp-accent-teal);
-  transition: all var(--lp-transition-base);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 200ms ease, background 200ms, color 200ms;
 }
 
-.lp-capability-card:hover .lp-capability-icon {
-  background: var(--lp-accent-teal);
-  color: white;
+.lp-capability-card:hover .irctc-cap-circle {
+  transform: scale(1.1);
+  background: var(--cap-color, #0D9488);
+  color: #FFFFFF;
 }
 
-.lp-capability-icon svg {
-  width: 22px;
-  height: 22px;
+.cap-badge-pill {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid;
+  text-transform: uppercase;
 }
 
 .lp-capability-title {
@@ -961,3 +986,456 @@
     border-bottom: none;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   IRCTC TOP LIVE NOTICE TICKER BANNER
+   ══════════════════════════════════════════════════════════════════ */
+
+.irctc-top-ticker {
+  background: #0B1D35;
+  border-bottom: 1px solid rgba(20, 184, 166, 0.3);
+  display: flex;
+  align-items: center;
+  height: 36px;
+  overflow: hidden;
+  padding: 0 40px;
+  font-size: 0.72rem;
+  color: #E2E8F0;
+}
+
+.ticker-label {
+  font-weight: 800;
+  color: #14B8A6;
+  background: rgba(20, 184, 166, 0.15);
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-right: 16px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.ticker-text-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.ticker-text {
+  display: inline-block;
+  animation: tickerScroll 28s linear infinite;
+}
+
+.ticker-text span {
+  margin-right: 40px;
+  font-weight: 500;
+}
+
+@keyframes tickerScroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   OFFICIAL GOVERNMENT MARITIME COMMAND CONSOLE
+   ══════════════════════════════════════════════════════════════════ */
+
+.govt-command-box {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  max-width: 580px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.command-box-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gov-seal-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #0B1D35;
+  color: #14B8A6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.command-box-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #0F172A;
+}
+
+.command-box-subtitle {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #0D9488;
+}
+
+.command-directives-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.directive-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.directive-field label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.directive-field select {
+  padding: 8px 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #0F172A;
+  background: #F8FAFC;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  outline: none;
+}
+
+.directive-field select:focus {
+  border-color: #0D9488;
+  background: #FFFFFF;
+}
+
+.command-quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.actions-label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.actions-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cmd-chip {
+  padding: 6px 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #334155;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.cmd-chip:hover {
+  background: rgba(13, 148, 136, 0.1);
+  color: #0D9488;
+  border-color: #0D9488;
+}
+
+.cmd-chip.highlight {
+  background: rgba(236, 72, 153, 0.1);
+  color: #EC4899;
+  border-color: rgba(236, 72, 153, 0.3);
+}
+
+.launch-command-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: white;
+  background: #0D9488;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 200ms;
+}
+
+.launch-command-btn:hover {
+  background: #0F766E;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MINISTERIAL DECISION RADAR SECTION (5-5 GRID LAYOUT)
+   ══════════════════════════════════════════════════════════════════ */
+
+.govt-landing-radar-section {
+  padding: 56px 80px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  text-align: center;
+}
+
+.govt-radar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 28px 24px;
+  max-width: 1100px;
+  margin: 32px auto 0;
+}
+
+.govt-radar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 22px 16px;
+  cursor: pointer;
+  transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+}
+
+.govt-radar-item:hover {
+  transform: translateY(-6px);
+  background: #FFFFFF;
+  border-color: #0D9488;
+  box-shadow: 0 12px 36px rgba(13, 148, 136, 0.16);
+}
+
+.govt-radar-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid var(--radar-color, #0D9488);
+  color: var(--radar-color, #0D9488);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition: transform 200ms ease, background 200ms, color 200ms;
+}
+
+.govt-radar-item:hover .govt-radar-circle {
+  transform: scale(1.1);
+  background: var(--radar-color, #0D9488);
+  color: #FFFFFF;
+}
+
+.govt-radar-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #0F172A;
+  margin-top: 2px;
+}
+
+.govt-radar-desc {
+  font-size: 0.65rem;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.irctc-landing-service-card:hover .irctc-landing-icon-circle {
+  transform: scale(1.1);
+  background: var(--icon-color, #0D9488);
+  color: #FFFFFF;
+}
+
+.irctc-landing-service-card .service-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #0F172A;
+}
+
+.irctc-landing-service-card .service-desc {
+  font-size: 0.65rem;
+  color: #64748B;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FEATURED ECOSYSTEMS & PACKAGES GRID
+   ══════════════════════════════════════════════════════════════════ */
+
+.featured-ecosystems-section {
+  padding: 60px 80px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.featured-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: all 200ms ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.featured-card:hover {
+  transform: translateY(-4px);
+  border-color: #0D9488;
+  box-shadow: 0 12px 36px rgba(13, 148, 136, 0.12);
+}
+
+.featured-img-box {
+  width: 100%;
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+  background: #0B1D35;
+}
+
+.featured-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+.featured-card:hover .featured-img-box img {
+  transform: scale(1.05);
+}
+
+.eco-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #0B1D35;
+  color: #14B8A6;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(20, 184, 166, 0.3);
+}
+
+.featured-card-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.eco-category {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #0D9488;
+  margin-bottom: 4px;
+}
+
+.eco-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 6px;
+}
+
+.eco-desc {
+  font-size: 0.75rem;
+  color: #64748B;
+  margin: 0 0 14px;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.eco-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0D9488;
+  padding-top: 10px;
+  border-top: 1px solid #F1F5F9;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   IRCTC AskDISHA STYLE FLOATING AI ASSISTANT BADGE
+   ══════════════════════════════════════════════════════════════════ */
+
+.irctc-ask-disha-floating-badge {
+  position: fixed;
+  bottom: 24px;
+  right: 28px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FFFFFF;
+  border: 2px solid #0D9488;
+  border-radius: 30px;
+  padding: 8px 16px 8px 8px;
+  box-shadow: 0 10px 30px rgba(13, 148, 136, 0.25);
+  cursor: pointer;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms;
+}
+
+.irctc-ask-disha-floating-badge:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 16px 40px rgba(13, 148, 136, 0.35);
+}
+
+.disha-icon-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #0D9488;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.disha-text-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.disha-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.disha-subtitle {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #0D9488;
+}
+
