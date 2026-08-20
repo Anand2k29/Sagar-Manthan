@@ -1844,31 +1844,129 @@ function ChatModule({
 
 function OtolithSVG({ specimen }) {
   const currentSpecimen = specimen || specimenData[0];
-  const rx = Number(currentSpecimen?.rx) || 110;
-  const ry = Number(currentSpecimen?.ry) || 65;
+  const rx = Number(currentSpecimen?.rx) || 120;
+  const ry = Number(currentSpecimen?.ry) || 70;
+  const sampleName = currentSpecimen?.name || 'Sardinella longiceps';
+  const lenStr = currentSpecimen?.length || '14.22 mm';
+  const widStr = currentSpecimen?.width || '6.81 mm';
 
   return (
-    <svg viewBox="0 0 400 300" style={{ width: '100%', height: '100%', background: '#040c14' }}>
-      <defs>
-        <radialGradient id="oG" cx="50%" cy="50%">
-          <stop offset="0%" stopColor="#d4c5a0" /><stop offset="40%" stopColor="#b8a67c" />
-          <stop offset="70%" stopColor="#8c7a58" /><stop offset="100%" stopColor="#5a4e38" />
-        </radialGradient>
-        <filter id="oS"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000" floodOpacity="0.5" /></filter>
-      </defs>
-      <line x1="30" y1="270" x2="100" y2="270" stroke="#22d3ee" strokeWidth="1.5" />
-      <text x="55" y="285" fill="#22d3ee" fontSize="9" textAnchor="middle" fontFamily="Inter">2 mm</text>
-      <ellipse cx="200" cy="140" rx={rx} ry={ry} fill="url(#oG)" filter="url(#oS)" transform="rotate(-8, 200, 140)" />
-      {[0.85, 0.65, 0.45, 0.3].map((s, i) => (
-        <ellipse key={i} cx="200" cy="140" rx={rx * s} ry={ry * s} fill="none" stroke="rgba(90,78,56,0.5)" strokeWidth="0.8" transform="rotate(-8, 200, 140)" />
-      ))}
-      <ellipse cx="195" cy="142" rx="12" ry="8" fill="#a39070" transform="rotate(-8, 195, 142)" />
-      <line x1={200 - rx + 15} y1="140" x2={200 + rx + 15} y2="140" stroke="#22d3ee" strokeWidth="0.6" strokeDasharray="4 2" opacity="0.6" />
-      <line x1="200" y1={140 - ry - 10} x2="200" y2={140 + ry + 10} stroke="#2dd4bf" strokeWidth="0.6" strokeDasharray="4 2" opacity="0.6" />
-      <text x="200" y="22" fill="#22d3ee" fontSize="10" textAnchor="middle" fontFamily="Inter" fontWeight="600">Sample {currentSpecimen?.sampleId}</text>
-      <text x={Math.min(375, 200 + rx + 15)} y="138" fill="#22d3ee" fontSize="8" fontFamily="Inter">{currentSpecimen?.length}</text>
-      <text x="208" y={Math.min(270, 140 + ry + 18)} fill="#2dd4bf" fontSize="8" fontFamily="Inter">{currentSpecimen?.width}</text>
-    </svg>
+    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: '#08121E', borderRadius: '10px' }}>
+      <svg viewBox="0 0 400 240" style={{ width: '100%', height: '100%' }}>
+        <defs>
+          {/* Micro Grid Background */}
+          <pattern id="sciGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+          </pattern>
+
+          {/* Organic Otolith Texture Gradient */}
+          <radialGradient id="otoGrad" cx="48%" cy="50%" r="52%">
+            <stop offset="0%" stopColor="#F1F5F9" stopOpacity="0.95" />
+            <stop offset="25%" stopColor="#E2E8F0" stopOpacity="0.9" />
+            <stop offset="55%" stopColor="#CBD5E1" stopOpacity="0.85" />
+            <stop offset="82%" stopColor="#94A3B8" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#64748B" stopOpacity="0.75" />
+          </radialGradient>
+
+          {/* Core Nucleus Gradient */}
+          <radialGradient id="nucleusGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#A855F7" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#6B21A8" stopOpacity="0.2" />
+          </radialGradient>
+
+          {/* Glow Shadow */}
+          <filter id="otoShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="#000000" floodOpacity="0.6" />
+          </filter>
+        </defs>
+
+        {/* Scientific Laboratory Grid Background */}
+        <rect width="400" height="240" fill="url(#sciGrid)" />
+
+        {/* ── Otolith Organic Specimen Body ── */}
+        <g transform="rotate(-6, 200, 120)" filter="url(#otoShadow)">
+          {/* Main Otolith Ear-Stone Body */}
+          <path
+            d={`M ${200 - rx} 120 
+               C ${200 - rx} ${120 - ry * 1.1}, ${200 + rx * 0.4} ${120 - ry * 1.25}, ${200 + rx} 120 
+               C ${200 + rx * 0.95} ${120 + ry * 1.15}, ${200 - rx * 0.6} ${120 + ry * 1.05}, ${200 - rx} 120 Z`}
+            fill="url(#otoGrad)"
+            stroke="rgba(255,255,255,0.4)"
+            strokeWidth="1.2"
+          />
+
+          {/* Micro-Structure Concentric Growth Annuli Rings */}
+          {[0.88, 0.74, 0.60, 0.45, 0.30].map((s, i) => (
+            <ellipse
+              key={i}
+              cx="196"
+              cy="120"
+              rx={rx * s}
+              ry={ry * s}
+              fill="none"
+              stroke="rgba(71, 85, 105, 0.45)"
+              strokeWidth={i % 2 === 0 ? "1" : "0.6"}
+              strokeDasharray={i % 2 === 1 ? "4 2" : "none"}
+            />
+          ))}
+
+          {/* Sulcus Acusticus Center Groove */}
+          <path
+            d="M 140 120 Q 196 116, 255 120"
+            fill="none"
+            stroke="rgba(30, 41, 59, 0.5)"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+
+          {/* Core Nucleus Target Area */}
+          <ellipse cx="196" cy="120" rx="14" ry="10" fill="url(#nucleusGrad)" stroke="#C084FC" strokeWidth="1" />
+        </g>
+
+        {/* ── Interactive Computer-Vision Measurement Overlays ── */}
+
+        {/* Top-Left Specimen Label Badge */}
+        <rect x="14" y="14" width="118" height="20" rx="4" fill="rgba(11,29,53,0.85)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" />
+        <text x="22" y="27" fill="#E2E8F0" fontSize="8.5" fontFamily="Inter" fontWeight="700">[{sampleName}]</text>
+
+        {/* Reticle Target Circle */}
+        <circle cx="196" cy="120" r="18" fill="none" stroke="#C084FC" strokeWidth="1.2" strokeDasharray="4 2" />
+        <line x1="196" y1="96" x2="196" y2="144" stroke="#C084FC" strokeWidth="0.8" opacity="0.75" />
+        <line x1="172" y1="120" x2="220" y2="120" stroke="#C084FC" strokeWidth="0.8" opacity="0.75" />
+
+        {/* Growth Annuli Pointer Arrows */}
+        <path d="M 175 100 L 182 107" stroke="#F43F5E" strokeWidth="1.4" />
+        <circle cx="175" cy="100" r="1.8" fill="#F43F5E" />
+        <path d="M 218 100 L 211 107" stroke="#F43F5E" strokeWidth="1.4" />
+        <circle cx="218" cy="100" r="1.8" fill="#F43F5E" />
+        <path d="M 175 140 L 182 133" stroke="#F43F5E" strokeWidth="1.4" />
+        <circle cx="175" cy="140" r="1.8" fill="#F43F5E" />
+
+        {/* Major Axis Measurement Line (Length: L) */}
+        <line x1={200 - rx + 10} y1="120" x2={200 + rx - 10} y2="120" stroke="#F97316" strokeWidth="1.5" opacity="0.9" />
+        <line x1={200 - rx + 10} y1="112" x2={200 - rx + 10} y2="128" stroke="#F97316" strokeWidth="1.5" />
+        <line x1={200 + rx - 10} y1="112" x2={200 + rx - 10} y2="128" stroke="#F97316" strokeWidth="1.5" />
+
+        {/* Digital Length Badge Tag */}
+        <rect x="70" y="110" width="75" height="20" rx="4" fill="#0F172A" stroke="#F97316" strokeWidth="1" />
+        <text x="107.5" y="123" fill="#F97316" fontSize="9.5" textAnchor="middle" fontFamily="JetBrains Mono" fontWeight="800">L: {lenStr}</text>
+
+        {/* Minor Axis Measurement Line (Width: W) */}
+        <line x1="260" y1={120 - ry + 10} x2="260" y2={120 + ry - 10} stroke="#06B6D4" strokeWidth="1.2" strokeDasharray="3 2" />
+        <line x1="254" y1={120 - ry + 10} x2="266" y2={120 - ry + 10} stroke="#06B6D4" strokeWidth="1.2" />
+        <line x1="254" y1={120 + ry - 10} x2="266" y2={120 + ry - 10} stroke="#06B6D4" strokeWidth="1.2" />
+
+        {/* Digital Width Badge Tag */}
+        <rect x="270" y="110" width="75" height="20" rx="4" fill="#0F172A" stroke="#06B6D4" strokeWidth="1" />
+        <text x="307.5" y="123" fill="#06B6D4" fontSize="9.5" textAnchor="middle" fontFamily="JetBrains Mono" fontWeight="800">W: {widStr}</text>
+
+        {/* Scale Bar (2 mm) */}
+        <line x1="24" y1="216" x2="84" y2="216" stroke="#22D3EE" strokeWidth="2" />
+        <line x1="24" y1="211" x2="24" y2="221" stroke="#22D3EE" strokeWidth="1.5" />
+        <line x1="84" y1="211" x2="84" y2="221" stroke="#22D3EE" strokeWidth="1.5" />
+        <text x="54" y="228" fill="#22D3EE" fontSize="9" textAnchor="middle" fontFamily="JetBrains Mono" fontWeight="700">2 mm</text>
+      </svg>
+    </div>
   );
 }
 
