@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import LandingPage from './components/LandingPage/LandingPage.jsx';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend, LineChart, Line, BarChart, Bar, Cell
@@ -485,6 +486,7 @@ function useAnimatedCounter(target, duration = 1200) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 export default function App() {
+  const [showLanding, setShowLanding] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [mapLayers, setMapLayers] = useState({
     currents: true,
@@ -597,6 +599,21 @@ export default function App() {
   ];
 
   const timeStr = currentTime.toLocaleTimeString('en-IN', { hour12: false, timeZone: 'Asia/Kolkata' });
+
+  // Landing page handlers
+  const handleLandingEnter = () => {
+    setShowLanding(false);
+  };
+
+  const handleLandingNavigate = (tabId) => {
+    setActiveTab(tabId);
+    setShowLanding(false);
+  };
+
+  // Show landing page
+  if (showLanding) {
+    return <LandingPage onEnter={handleLandingEnter} onNavigate={handleLandingNavigate} />;
+  }
 
   return (
     <>
@@ -798,245 +815,187 @@ function MapFlyTo({ center, flyCount }) {
 }
 
 function GISMap({ layers, toggleLayer }) {
-  const [selectedStation, setSelectedStation] = useState(mapMarkers[0]);
+  const [selectedStation, setSelectedStation] = useState(mapMarkers[5]); // Default to Site-7 (Kerala Coast)
   const [flyCount, setFlyCount] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
 
   const markerColor = (type) => {
-    if (type === 'energy') return '#f59e0b';
-    if (type === 'biodiversity') return '#2dd4bf';
-    return '#22d3ee';
+    if (type === 'energy') return '#0D9488';
+    if (type === 'biodiversity') return '#10B981';
+    return '#06B6D4';
   };
 
   const layerConfig = [
-    { key: 'eez', label: 'EEZ Boundary (200 NM)', icon: Compass },
-    { key: 'currents', label: 'Ocean Currents', icon: Wind },
-    { key: 'migration', label: 'Fish Migration', icon: Fish },
-    { key: 'biodiversity', label: 'Biodiversity Hotspots', icon: Eye },
-    { key: 'energy', label: 'Energy Sites', icon: Zap },
-    { key: 'digitalTwin', label: 'Digital Twin Zone', icon: ScanLine },
+    { key: 'temperature', label: 'Sea Temperature' },
+    { key: 'currents', label: 'Ocean Currents' },
+    { key: 'migration', label: 'Fish Migration' },
+    { key: 'biodiversity', label: 'Biodiversity' },
+    { key: 'traffic', label: 'Marine Traffic' },
+    { key: 'energy', label: 'Wave Energy' },
+    { key: 'eez', label: 'Bathymetry' },
   ];
-
-  const filteredMarkers = mapMarkers.filter(m => {
-    const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase());
-    if (activeFilter === 'energy') return matchesSearch && m.type === 'energy';
-    if (activeFilter === 'bio') return matchesSearch && m.type === 'biodiversity';
-    if (activeFilter === 'sensor') return matchesSearch && m.type === 'sensor';
-    if (activeFilter === 'highScore') return matchesSearch && m.suitability >= 8;
-    return matchesSearch;
-  });
 
   return (
     <div className="tab-content" id="gis-map-section">
-      <div className="section-header">
-        <h2>Geospatial Intelligence</h2>
-        <p>Interactive 3D-depth visualization of the Indian Exclusive Economic Zone (EEZ)</p>
+      <div className="map-section-header">
+        <h2>EXPLORE INDIA'S OCEAN</h2>
+        <p>Interactive Ocean Intelligence Map</p>
       </div>
 
-      {/* Map Search & Filter Toolbar */}
-      <div className="map-toolbar">
-        <div className="map-search-wrapper">
-          <Search size={15} />
-          <input
-            type="text"
-            className="map-search-input"
-            placeholder="Search stations (e.g. Kerala, Kutch, Lakshadweep, Visakhapatnam)..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
+      <div className="gis-map-container">
+        {/* Left Side Data Layers Toggle Panel */}
+        <div className="map-side-panel left-panel">
+          <div className="panel-title">DATA LAYERS</div>
+          <div className="layer-toggle-list">
+            {layerConfig.map(l => (
+              <div key={l.key} className="layer-toggle-row">
+                <span className="layer-label">{l.label}</span>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={layers[l.key] ?? true}
+                    onChange={() => toggleLayer(l.key)}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
+            ))}
+          </div>
+
+          <button
+            className="reset-view-btn"
+            onClick={() => {
+              setSelectedStation(mapMarkers[5]);
+              setFlyCount(c => c + 1);
+            }}
+          >
+            RESET VIEW
+          </button>
         </div>
-        <div className="map-filter-pills">
-          <button className={`map-filter-pill ${activeFilter === 'all' ? 'active' : ''}`} onClick={() => setActiveFilter('all')}>
-            All ({mapMarkers.length})
-          </button>
-          <button className={`map-filter-pill ${activeFilter === 'highScore' ? 'active' : ''}`} onClick={() => setActiveFilter('highScore')}>
-            ⚡ Prime Energy (&gt;8.0 Score)
-          </button>
-          <button className={`map-filter-pill ${activeFilter === 'bio' ? 'active' : ''}`} onClick={() => setActiveFilter('bio')}>
-            🪸 Coral Hotspots
-          </button>
-          <button className={`map-filter-pill ${activeFilter === 'sensor' ? 'active' : ''}`} onClick={() => setActiveFilter('sensor')}>
-            🛰️ Sensor Array
-          </button>
-        </div>
-      </div>
 
-      {/* Map View Wrapper */}
-      <div className="map-wrapper">
-        <MapContainer
-          center={[14.5, 76.5]}
-          zoom={5.2}
-          minZoom={4.5}
-          maxZoom={12}
-          maxBounds={[[0, 45], [32, 105]]}
-          maxBoundsViscosity={0.8}
-          style={{ height: '580px', width: '100%' }}
-          zoomControl={true}
-          attributionControl={true}
-          id="leaflet-map"
-        >
-          <MapInit />
-          <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-            subdomains="abcd" maxZoom={19}
-          />
-
-          <MapFlyTo center={selectedStation ? [selectedStation.lat, selectedStation.lng] : null} flyCount={flyCount} />
-
-          {/* EEZ Maritime Boundary 200 NM Polygon */}
-          {layers.eez && (
-            <Polygon
-              positions={eezPolygon}
-              pathOptions={{ color: '#22d3ee', weight: 1.5, opacity: 0.7, dashArray: '6 6', fillColor: '#22d3ee', fillOpacity: 0.03 }}
+        {/* Center Map View */}
+        <div className="map-view-center">
+          <MapContainer
+            center={[14.5, 76.5]}
+            zoom={5.2}
+            minZoom={4.5}
+            maxZoom={12}
+            maxBounds={[[0, 45], [32, 105]]}
+            maxBoundsViscosity={0.8}
+            style={{ height: '560px', width: '100%', borderRadius: '14px' }}
+            zoomControl={true}
+            attributionControl={false}
+            id="leaflet-map"
+          >
+            <MapInit />
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+              subdomains="abcd" maxZoom={19}
             />
-          )}
 
-          {/* Ocean Currents */}
-          {layers.currents && (
-            <LayerGroup>
-              <Polyline positions={oceanCurrents.wicc} pathOptions={{ color: '#22d3ee', weight: 2, opacity: 0.5, dashArray: '8 6' }} />
-              <Polyline positions={oceanCurrents.eicc} pathOptions={{ color: '#22d3ee', weight: 2, opacity: 0.4, dashArray: '8 6' }} />
-              <Polyline positions={oceanCurrents.equatorial} pathOptions={{ color: '#22d3ee', weight: 1.5, opacity: 0.3, dashArray: '6 8' }} />
-            </LayerGroup>
-          )}
+            <MapFlyTo center={selectedStation ? [selectedStation.lat, selectedStation.lng] : null} flyCount={flyCount} />
 
-          {/* Migration Paths */}
-          {layers.migration && (
-            <LayerGroup>
-              <Polyline positions={migrationPaths.sardine} pathOptions={{ color: '#2dd4bf', weight: 2.5, opacity: 0.5, dashArray: '4 8' }} />
-              <Polyline positions={migrationPaths.mackerel} pathOptions={{ color: '#2dd4bf', weight: 2, opacity: 0.4, dashArray: '4 8' }} />
-            </LayerGroup>
-          )}
+            {/* EEZ Polygon */}
+            {layers.eez && (
+              <Polygon
+                positions={eezPolygon}
+                pathOptions={{ color: '#0D9488', weight: 1.5, opacity: 0.7, dashArray: '6 6', fillColor: '#0D9488', fillOpacity: 0.04 }}
+              />
+            )}
 
-          {/* Biodiversity Hotspots */}
-          {layers.biodiversity && (
-            <LayerGroup>
-              {biodiversityZones.map((zone, i) => (
-                <Circle key={i} center={zone.center} radius={zone.radius}
-                  pathOptions={{ color: '#2dd4bf', fillColor: '#2dd4bf', fillOpacity: 0.08, weight: 1, opacity: 0.3 }} />
-              ))}
-            </LayerGroup>
-          )}
+            {/* Ocean Currents */}
+            {(layers.currents ?? true) && (
+              <LayerGroup>
+                <Polyline positions={oceanCurrents.wicc} pathOptions={{ color: '#06B6D4', weight: 2.5, opacity: 0.6, dashArray: '8 6' }} />
+                <Polyline positions={oceanCurrents.eicc} pathOptions={{ color: '#06B6D4', weight: 2, opacity: 0.5, dashArray: '8 6' }} />
+              </LayerGroup>
+            )}
 
-          {/* Energy Site Zones */}
-          {layers.energy && (
-            <LayerGroup>
-              {mapMarkers.filter(m => m.type === 'energy').map(m => (
-                <Circle key={`ez-${m.id}`} center={[m.lat, m.lng]} radius={25000}
-                  pathOptions={{ color: '#f59e0b', fillColor: '#f59e0b', fillOpacity: 0.06, weight: 1, opacity: 0.25 }} />
-              ))}
-            </LayerGroup>
-          )}
+            {/* Migration Paths */}
+            {layers.migration && (
+              <LayerGroup>
+                <Polyline positions={migrationPaths.sardine} pathOptions={{ color: '#10B981', weight: 2.5, opacity: 0.6, dashArray: '4 8' }} />
+              </LayerGroup>
+            )}
 
-          {/* Digital Twin Zone */}
-          {layers.digitalTwin && (
-            <Circle center={[9.5, 75.5]} radius={80000}
-              pathOptions={{ color: '#a78bfa', fillColor: '#a78bfa', fillOpacity: 0.06, weight: 1.5, opacity: 0.4, dashArray: '6 4' }} />
-          )}
-
-          {/* All Markers */}
-          {filteredMarkers.map(marker => (
-            <CircleMarker
-              key={marker.id}
-              center={[marker.lat, marker.lng]}
-              radius={selectedStation?.id === marker.id ? 9 : 6}
-              pathOptions={{
-                color: markerColor(marker.type),
-                fillColor: markerColor(marker.type),
-                fillOpacity: selectedStation?.id === marker.id ? 1 : 0.8,
-                weight: selectedStation?.id === marker.id ? 3 : 1.5
-              }}
-              eventHandlers={{
-                click: () => {
-                  setSelectedStation(marker);
-                  setFlyCount(c => c + 1);
-                }
-              }}
-            >
-              <Popup>
-                <div className="map-popup-content">
-                  <h3>{marker.name}</h3>
-                  <div className="popup-row"><span className="popup-label">Depth Range</span><span className="popup-value">{marker.depth}</span></div>
-                  <div className="popup-row"><span className="popup-label">Species Density</span><span className="popup-value">{marker.species} species</span></div>
-                  <div className="popup-row"><span className="popup-label">Tidal Range</span><span className="popup-value">{marker.tidal}</span></div>
-                  <div className="popup-row">
-                    <span className="popup-label">Energy Suitability</span>
-                    <span className="popup-value" style={{ color: marker.suitability > 7 ? '#4ade80' : marker.suitability > 5 ? '#f59e0b' : '#f87171' }}>
-                      {marker.suitability}/10
-                    </span>
+            {/* Markers */}
+            {mapMarkers.map(marker => (
+              <CircleMarker
+                key={marker.id}
+                center={[marker.lat, marker.lng]}
+                radius={selectedStation?.id === marker.id ? 10 : 7}
+                pathOptions={{
+                  color: markerColor(marker.type),
+                  fillColor: selectedStation?.id === marker.id ? '#F59E0B' : markerColor(marker.type),
+                  fillOpacity: selectedStation?.id === marker.id ? 1 : 0.85,
+                  weight: selectedStation?.id === marker.id ? 3 : 2
+                }}
+                eventHandlers={{
+                  click: () => {
+                    setSelectedStation(marker);
+                    setFlyCount(c => c + 1);
+                  }
+                }}
+              >
+                <Popup>
+                  <div className="map-popup-content">
+                    <h3>{marker.name}</h3>
+                    <div className="popup-row"><span className="popup-label">Depth</span><span className="popup-value">{marker.depth}</span></div>
+                    <div className="popup-row"><span className="popup-label">Tidal</span><span className="popup-value">{marker.tidal}</span></div>
                   </div>
-                </div>
-              </Popup>
-            </CircleMarker>
-          ))}
-        </MapContainer>
-
-        {/* Custom Layer Controls */}
-        <div className="map-controls" id="map-controls">
-          {layerConfig.map(l => (
-            <label key={l.key} className={`map-layer-toggle ${layers[l.key] ? 'active' : ''}`} id={`layer-${l.key}`}>
-              <input type="checkbox" checked={!!layers[l.key]} onChange={() => toggleLayer(l.key)} />
-              <l.icon size={13} />{l.label}
-            </label>
-          ))}
+                </Popup>
+              </CircleMarker>
+            ))}
+          </MapContainer>
         </div>
 
-        {/* Map Legend */}
-        <div className="map-legend" id="map-legend">
-          <h4>Legend</h4>
-          <div className="legend-item"><div className="legend-dot" style={{ background: '#f59e0b' }} /> Energy Site</div>
-          <div className="legend-item"><div className="legend-dot" style={{ background: '#2dd4bf' }} /> Biodiversity Hotspot</div>
-          <div className="legend-item"><div className="legend-dot" style={{ background: '#22d3ee' }} /> Sensor / Buoy</div>
-          <div className="legend-item"><div className="legend-line" style={{ background: '#22d3ee' }} /> Ocean Current (WICC)</div>
-          <div className="legend-item"><div className="legend-line" style={{ background: '#2dd4bf' }} /> Migration Path</div>
-        </div>
-      </div>
+        {/* Right Side Station Details Card Panel */}
+        <div className="map-side-panel right-panel">
+          <div className="detail-header">
+            <h3>{selectedStation.name.toUpperCase()}</h3>
+            <span className="detail-country">INDIA</span>
+          </div>
 
-      {/* Selected Station Telemetry Inspector */}
-      {selectedStation && (
-        <div className="station-inspector">
-          <div className="station-inspector-header">
-            <div className="station-inspector-title">
-              <h3>{selectedStation.name}</h3>
-              <p>Lat: {selectedStation.lat.toFixed(2)}°N, Long: {selectedStation.lng.toFixed(2)}°E • Station ID: STN-{String(selectedStation.id).toUpperCase()}</p>
-            </div>
-            <div className="status-badge green">
-              <Activity size={12} /> Live In-Situ Telemetry Feed
+          <div className="detail-media-box">
+            <div className="detail-image-placeholder">
+              <span className="sea-badge">COASTAL VIEW</span>
             </div>
           </div>
 
-          <div className="telemetry-grid">
-            <div className="telemetry-card">
-              <div className="telemetry-label">Energy Suitability</div>
-              <div className="telemetry-val" style={{ color: selectedStation.suitability > 7 ? '#4ade80' : '#f59e0b' }}>
-                {selectedStation.suitability}/10
+          <div className="detail-stats-list">
+            <div className="detail-stat-block">
+              <div className="d-label">SEA SURFACE TEMP</div>
+              <div className="d-value font-mono">28.4 °C</div>
+            </div>
+
+            <div className="detail-stat-block">
+              <div className="d-label">BIODIVERSITY INDEX</div>
+              <div className="d-value-row">
+                <span className="d-value font-mono">{(selectedStation.suitability * 0.85).toFixed(1)} / 10</span>
+                <span className="d-tag high">High</span>
               </div>
             </div>
-            <div className="telemetry-card">
-              <div className="telemetry-label">Depth Range</div>
-              <div className="telemetry-val" style={{ color: '#22d3ee' }}>{selectedStation.depth}</div>
+
+            <div className="detail-stat-block">
+              <div className="d-label">WAVE ENERGY POTENTIAL</div>
+              <div className="d-value font-mono">{selectedStation.suitability > 8 ? '42 GW' : '28 GW'}</div>
             </div>
-            <div className="telemetry-card">
-              <div className="telemetry-label">Tidal Amplitude</div>
-              <div className="telemetry-val" style={{ color: '#2dd4bf' }}>{selectedStation.tidal}</div>
+
+            <div className="detail-stat-block">
+              <div className="d-label">MARINE TRAFFIC</div>
+              <div className="d-value font-mono">Low</div>
             </div>
-            <div className="telemetry-card">
-              <div className="telemetry-label">Catalogued Species</div>
-              <div className="telemetry-val" style={{ color: '#a78bfa' }}>{selectedStation.species} spp</div>
-            </div>
-            <div className="telemetry-card">
-              <div className="telemetry-label">Sea Surface Temp</div>
-              <div className="telemetry-val" style={{ color: '#f59e0b' }}>27.4 °C</div>
-            </div>
-            <div className="telemetry-card">
-              <div className="telemetry-label">Current Velocity</div>
-              <div className="telemetry-val" style={{ color: '#22d3ee' }}>1.85 knots</div>
+
+            <div className="detail-stat-block">
+              <div className="d-label">SPECIES DETECTED</div>
+              <div className="d-value font-mono">{selectedStation.species}</div>
             </div>
           </div>
+
+          <button className="view-analytics-btn">
+            VIEW DETAILED ANALYTICS
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -1047,54 +1006,166 @@ function GISMap({ layers, toggleLayer }) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 function OtolithModule() {
-  const [showAnalysis, setShowAnalysis] = useState(true);
   const [selectedSpecimen, setSelectedSpecimen] = useState(specimenData[0]);
+
+  const taxonomyHierarchy = [
+    { rank: 'KINGDOM', name: 'Animalia' },
+    { rank: 'PHYLUM', name: 'Chordata' },
+    { rank: 'CLASS', name: 'Actinopterygii' },
+    { rank: 'ORDER', name: 'Clupeiformes' },
+    { rank: 'FAMILY', name: 'Clupeidae' },
+    { rank: 'GENUS', name: 'Sardinella' },
+    { rank: 'SPECIES', name: 'S. longiceps', isSelected: true },
+  ];
 
   return (
     <div className="tab-content" id="otolith-module">
-      <div className="section-header">
-        <h2>Otolith Morphometry & Taxonomy</h2>
-        <p>AI-powered fish species identification through ear-stone analysis</p>
+      {/* Top Search Bar */}
+      <div className="otolith-top-bar">
+        <div className="otolith-search">
+          <Search size={15} />
+          <input type="text" placeholder="Search parameters, specimen..." />
+        </div>
       </div>
 
-      <div className="otolith-grid">
-        <div>
-          <div className="section-title">Otolith Image Analysis</div>
-          <div className={`upload-zone ${showAnalysis ? 'has-image' : ''}`} onClick={() => setShowAnalysis(true)} id="otolith-upload">
-            {showAnalysis ? <OtolithSVG specimen={selectedSpecimen} /> : (
-              <>
-                <div className="upload-icon"><Upload /></div>
-                <div className="upload-text"><strong>Drag & drop</strong> an otolith image or click to upload</div>
-                <div className="upload-hint">Supports JPEG, PNG, TIFF • Max 50MB</div>
-              </>
-            )}
+      {/* Main Grid */}
+      <div className="otolith-main-grid">
+        {/* Left Column: Specimen Imagery + Morphometric Parameters */}
+        <div className="otolith-col-left">
+          {/* Specimen Imagery Card */}
+          <div className="otolith-card specimen-imagery-card">
+            <div className="otolith-card-header">
+              <span className="card-title-text">SPECIMEN IMAGERY</span>
+              <button className="new-scan-btn">
+                <Upload size={13} /> New Scan
+              </button>
+            </div>
+            <div className="specimen-view-box">
+              <OtolithSVG specimen={selectedSpecimen} />
+            </div>
+          </div>
+
+          {/* Morphometric Parameters Card */}
+          <div className="otolith-card morph-parameters-card">
+            <div className="otolith-card-header">
+              <span className="card-title-text">MORPHOMETRIC PARAMETERS</span>
+            </div>
+
+            <table className="morph-table">
+              <thead>
+                <tr>
+                  <th>PARAMETER</th>
+                  <th>VALUE</th>
+                  <th>VARIANCE</th>
+                  <th>STATUS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Length (OL)</td>
+                  <td className="font-mono">14.22 mm</td>
+                  <td className="font-mono">+0.04</td>
+                  <td><span className="dot-status green"></span></td>
+                </tr>
+                <tr>
+                  <td>Width (OW)</td>
+                  <td className="font-mono">6.81 mm</td>
+                  <td className="font-mono">-0.12</td>
+                  <td><span className="dot-status green"></span></td>
+                </tr>
+                <tr>
+                  <td>Area (OA)</td>
+                  <td className="font-mono">74.5 mm²</td>
+                  <td className="font-mono">+1.20</td>
+                  <td><span className="dot-status orange"></span></td>
+                </tr>
+                <tr>
+                  <td>Perimeter (OP)</td>
+                  <td className="font-mono">36.4 mm</td>
+                  <td className="font-mono">-0.05</td>
+                  <td><span className="dot-status green"></span></td>
+                </tr>
+                <tr>
+                  <td>Form Factor</td>
+                  <td className="font-mono">0.71</td>
+                  <td className="font-mono">--</td>
+                  <td><span className="dot-status green"></span></td>
+                </tr>
+                <tr>
+                  <td>Circularity</td>
+                  <td className="font-mono">0.68</td>
+                  <td className="font-mono">+0.15</td>
+                  <td><span className="dot-status red"></span></td>
+                </tr>
+                <tr>
+                  <td>Rectangularity</td>
+                  <td className="font-mono">0.77</td>
+                  <td className="font-mono">-0.01</td>
+                  <td><span className="dot-status green"></span></td>
+                </tr>
+                <tr>
+                  <td>Eccentricity</td>
+                  <td className="font-mono">0.88</td>
+                  <td className="font-mono">+0.02</td>
+                  <td><span className="dot-status green"></span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div>
-          <div className="section-title">Morphometric Analysis Result</div>
-          <div className="card">
-            <div className="prediction-card" style={{ marginBottom: '14px' }}>
-              <div className="prediction-label">Predicted Species</div>
-              <div className="prediction-species"><em>{selectedSpecimen.name}</em></div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '4px 0 8px' }}>{selectedSpecimen.commonName}</div>
-              <div className="prediction-confidence">{selectedSpecimen.match}</div>
-              <div className="prediction-label">Confidence Score</div>
+        {/* Right Column: AI Classification + Taxonomic Hierarchy */}
+        <div className="otolith-col-right">
+          {/* AI Classification Card */}
+          <div className="otolith-card ai-classification-card">
+            <div className="otolith-card-header">
+              <span className="card-title-text">AI CLASSIFICATION</span>
+              <Bot size={18} className="ai-icon-badge" />
             </div>
-            <div className="morph-results">
-              {[
-                ['Length (Major Axis)', selectedSpecimen.length],
-                ['Width (Minor Axis)', selectedSpecimen.width],
-                ['Area', selectedSpecimen.area],
-                ['Perimeter', selectedSpecimen.perimeter],
-                ['Aspect Ratio', selectedSpecimen.aspectRatio],
-                ['Circularity Index', selectedSpecimen.circularity],
-                ['Estimated Age', selectedSpecimen.age],
-                ['Collection Site', selectedSpecimen.location],
-              ].map(([label, value], i) => (
-                <div key={i} className="morph-row">
-                  <span className="morph-label">{label}</span>
-                  <span className="morph-value">{value}</span>
+
+            <h3 className="classified-species-title">{selectedSpecimen.name}</h3>
+            <p className="classified-common-name">{selectedSpecimen.commonName}</p>
+
+            <div className="confidence-score-block">
+              <div className="confidence-label-row">
+                <span>CONFIDENCE SCORE</span>
+                <span className="font-mono">{selectedSpecimen.match}</span>
+              </div>
+              <div className="confidence-progress-bar">
+                <div
+                  className="confidence-fill"
+                  style={{ width: selectedSpecimen.match }}
+                ></div>
+              </div>
+            </div>
+
+            <div className="classification-meta-row">
+              <div>
+                <span className="meta-label">SECONDARY MATCH</span>
+                <p className="meta-val font-mono">Sardinella gibbosa (4.1%)</p>
+              </div>
+              <div>
+                <span className="meta-label">MODEL VERSION</span>
+                <p className="meta-val font-mono">SAGAR-VISION v3.2</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Taxonomic Hierarchy Card */}
+          <div className="otolith-card taxonomy-hierarchy-card">
+            <div className="otolith-card-header">
+              <span className="card-title-text">TAXONOMIC HIERARCHY</span>
+            </div>
+
+            <div className="taxonomy-list">
+              {taxonomyHierarchy.map((tax) => (
+                <div
+                  key={tax.rank}
+                  className={`taxonomy-row ${tax.isSelected ? 'selected' : ''}`}
+                >
+                  <span className="tax-bullet"></span>
+                  <span className="tax-rank">{tax.rank}</span>
+                  <span className="tax-name font-mono">{tax.name}</span>
                 </div>
               ))}
             </div>
@@ -1102,19 +1173,29 @@ function OtolithModule() {
         </div>
       </div>
 
-      <div style={{ marginTop: '1.5rem' }}>
-        <div className="section-title">Similar Specimens in Database (Click to view analysis)</div>
-        <div className="specimens-scroll" id="specimens-scroll">
-          {specimenData.map((sp, i) => (
+      {/* Bottom Section: Comparative Specimen Database */}
+      <div className="otolith-card comparative-database-card">
+        <div className="otolith-card-header">
+          <span className="card-title-text">COMPARATIVE SPECIMEN DATABASE</span>
+        </div>
+
+        <div className="database-cards-row">
+          {specimenData.slice(0, 4).map((sp, i) => (
             <div
               key={sp.id}
-              className={`specimen-card ${selectedSpecimen.id === sp.id ? 'active' : ''}`}
+              className={`db-specimen-item ${selectedSpecimen.id === sp.id ? 'active' : ''}`}
               onClick={() => setSelectedSpecimen(sp)}
             >
-              <div className="specimen-img"><SpecimenSVG index={i} /></div>
-              <div className="specimen-name">{sp.name}</div>
-              <div className="specimen-match">Match: {sp.match}</div>
-              <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '2px' }}>{sp.location}</div>
+              <div className="db-specimen-img">
+                <SpecimenSVG index={i} />
+              </div>
+              <div className="db-specimen-meta">
+                <div className="db-id font-mono">ID: {sp.sampleId.replace('SM-OTO-2024-', 'SM-OT-')}</div>
+                <div className="db-name">{sp.name}</div>
+                <div className="db-match">
+                  <CheckCircle2 size={11} /> Match: {sp.match}
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -1134,20 +1215,20 @@ function DigitalTwinTurbineSVG({ capacity }) {
   const turbineCount = capacity > 130 ? 4 : capacity > 75 ? 3 : capacity > 30 ? 2 : 1;
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '170px', background: 'linear-gradient(180deg, #071927 0%, #040c16 100%)', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', margin: '14px 0' }}>
+    <div style={{ position: 'relative', width: '100%', height: '170px', background: 'linear-gradient(180deg, #F0F9FF 0%, #E0F2FE 100%)', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden', margin: '14px 0' }}>
       <svg viewBox="0 0 500 170" style={{ width: '100%', height: '100%' }}>
         <defs>
           <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#040c16" stopOpacity="0.95" />
+            <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#0D9488" stopOpacity="0.3" />
           </linearGradient>
         </defs>
 
         {/* Water background */}
         <path d="M 0 30 Q 125 25, 250 30 T 500 30 L 500 170 L 0 170 Z" fill="url(#waterGrad)" />
-        <line x1="0" y1="30" x2="500" y2="30" stroke="#22d3ee" strokeWidth="1" strokeDasharray="6 4" opacity="0.6" />
-        <text x="15" y="22" fill="#22d3ee" fontSize="9" fontFamily="Inter" opacity="0.8">Surface Waves</text>
-        <text x="15" y="160" fill="#64748b" fontSize="8" fontFamily="Inter">Seabed (35m)</text>
+        <line x1="0" y1="30" x2="500" y2="30" stroke="#0D9488" strokeWidth="1" strokeDasharray="6 4" opacity="0.6" />
+        <text x="15" y="22" fill="#0D9488" fontSize="9" fontFamily="Inter" fontWeight="700">Surface Waves</text>
+        <text x="15" y="160" fill="#64748B" fontSize="8" fontFamily="Inter" fontWeight="600">Seabed (35m)</text>
 
         {/* Turbines */}
         {[...Array(turbineCount)].map((_, i) => {
